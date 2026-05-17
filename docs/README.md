@@ -139,7 +139,7 @@
 | 01-technology-stack.md | ✅ 완료 | 2026-05-16 |
 | 02-monorepo-structure.md | ✅ 완료 | 2026-05-16 |
 | 03-git-convention.md | ✅ 완료 | 2026-05-16 |
-| 04-build-run.md | ✅ 완료 | 2026-05-16 |
+| 04-build-run.md | ✅ 완료 | 2026-05-17 |
 | 05-api-common-rules.md | ✅ 완료 | 2026-05-16 |
 | 06-database-schema.md | ⏳ 선택 | - |
 
@@ -243,5 +243,5 @@ REST API (동기) → Event-Driven (비동기)
 
 ---
 
-**마지막 업데이트**: 2026-05-16  
-**버전**: 1.0
+**마지막 업데이트**: 2026-05-17  
+**버전**: 1.1

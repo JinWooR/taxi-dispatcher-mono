@@ -1,7 +1,7 @@
 # 1️⃣ 기술 스택 정의
 
 **상태**: 완료  
-**마지막 업데이트**: 2026-05-16
+**마지막 업데이트**: 2026-05-17
 
 ---
 
@@ -9,7 +9,7 @@
 
 | 항목 | 기술 | 버전 | 비고 |
 |------|------|------|------|
-| **Java** | OpenJDK | 17 LTS | - |
+| **Java** | Eclipse Temurin (OpenJDK) | 17 LTS | `eclipse-temurin:17-jdk-slim` |
 | **Language Support** | Groovy | - | - |
 | **Framework** | Spring Boot | 3.5.14 | - |
 | **Build Tool** | Gradle | 최신 | - |
