@@ -37,12 +37,6 @@ public class AuthController implements AuthApi {
     @Override
     @PostMapping("/register")
     public ResponseEntity<CommonResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        if (!request.isPasswordMatched()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(CommonResponse.error("INVALID_REQUEST", "비밀번호가 일치하지 않습니다"));
-        }
-
         Account account = accountService.registerAccount(request.getLoginId(), request.getPassword());
         return ResponseEntity.ok(CommonResponse.success(RegisterResponse.from(account), "회원가입 완료"));
     }

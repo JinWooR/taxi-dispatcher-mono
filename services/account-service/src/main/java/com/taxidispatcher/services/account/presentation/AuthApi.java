@@ -31,7 +31,11 @@ public interface AuthApi {
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "잘못된 요청 (비밀번호 불일치, 중복된 이메일 등)"
+                    description = "잘못된 요청 (필수 파라미터 누락, 형식 오류 등)"
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "중복된 이메일"
             ),
             @ApiResponse(
                     responseCode = "500",

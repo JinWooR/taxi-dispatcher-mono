@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 회원가입 요청 DTO
+ * 비밀번호 일치 확인은 클라이언트에서 처리하고, API는 단일 비밀번호만 수신합니다.
  */
 @Data
 @NoArgsConstructor
@@ -24,14 +25,4 @@ public class RegisterRequest {
     @NotBlank(message = "비밀번호는 필수입니다")
     @Size(min = 8, max = 50, message = "비밀번호는 8~50자여야 합니다")
     private String password;
-
-    @NotBlank(message = "비밀번호 확인은 필수입니다")
-    private String passwordConfirm;
-
-    /**
-     * 비밀번호 일치 확인
-     */
-    public boolean isPasswordMatched() {
-        return password != null && password.equals(passwordConfirm);
-    }
 }
