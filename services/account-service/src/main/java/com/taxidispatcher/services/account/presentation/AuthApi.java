@@ -8,18 +8,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.PostMapping;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * 인증 API 인터페이스
+ * 인증 API 명세 인터페이스 (Swagger 문서 전용)
+ * Spring MVC 매핑 어노테이션은 AuthController에서 직접 선언
  */
-@RequestMapping("/auth")
 @Tag(name = "Auth API", description = "인증 관련 API")
 public interface AuthApi {
 
-    @PostMapping("/register")
     @Operation(summary = "회원가입", description = "새로운 계정을 등록합니다")
     @ApiResponses(value = {
             @ApiResponse(
@@ -36,9 +34,8 @@ public interface AuthApi {
                     description = "서버 오류"
             )
     })
-    Object register(@RequestBody RegisterRequest request);
+    Object register(@Valid @RequestBody RegisterRequest request);
 
-    @PostMapping("/login")
     @Operation(summary = "로그인", description = "계정으로 로그인하여 JWT 토큰을 발급받습니다")
     @ApiResponses(value = {
             @ApiResponse(
@@ -59,5 +56,5 @@ public interface AuthApi {
                     description = "서버 오류"
             )
     })
-    Object login(@RequestBody LoginRequest request);
+    Object login(@Valid @RequestBody LoginRequest request);
 }

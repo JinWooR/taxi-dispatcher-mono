@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -26,6 +29,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
+@RequestMapping("/auth")
 @Validated
 @RequiredArgsConstructor
 public class AuthController implements AuthApi {
@@ -39,7 +43,8 @@ public class AuthController implements AuthApi {
      * 회원가입
      */
     @Override
-    public Object register(@Valid RegisterRequest request) {
+    @PostMapping("/register")
+    public Object register(@Valid @RequestBody RegisterRequest request) {
         try {
             // 1. 비밀번호 일치 확인
             if (!request.isPasswordMatched()) {
@@ -66,7 +71,8 @@ public class AuthController implements AuthApi {
      * 로그인
      */
     @Override
-    public Object login(@Valid LoginRequest request) {
+    @PostMapping("/login")
+    public Object login(@Valid @RequestBody LoginRequest request) {
         try {
             // 1. 계정 검증 및 로그인 처리
             Account account = accountService.loginAccount(request.getLoginId(), request.getPassword());

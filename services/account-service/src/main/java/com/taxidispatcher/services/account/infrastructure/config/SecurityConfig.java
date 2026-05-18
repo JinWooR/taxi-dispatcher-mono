@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -43,11 +44,19 @@ public class SecurityConfig {
                     "/actuator/health",
                     "/actuator/health/**"
                 ).permitAll()
+                // Health Check 공개 접근 허용
+                .requestMatchers(
+                    "/auth/register",
+                    "/auth/login"
+                ).permitAll()
                 // 나머지 모든 요청은 인증 필요
                 .anyRequest().authenticated()
             )
-            .csrf().disable()  // 개발 환경에서는 CSRF 비활성화 (프로덕션에서는 활성화 권장)
-            .formLogin().disable();
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }
