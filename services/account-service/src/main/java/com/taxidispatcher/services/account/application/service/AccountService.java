@@ -3,11 +3,12 @@ package com.taxidispatcher.services.account.application.service;
 import com.taxidispatcher.services.account.domain.account.Account;
 import com.taxidispatcher.services.account.domain.account.AccountId;
 import com.taxidispatcher.services.account.domain.account.AccountRepository;
-import com.taxidispatcher.services.account.domain.account.exception.AccountException;
 import com.taxidispatcher.services.account.domain.credential.BasicCredential;
 import com.taxidispatcher.services.account.domain.credential.CredentialId;
+import com.taxidispatcher.shared.common.exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,12 +31,12 @@ public class AccountService {
      * @param loginId 로그인 ID (이메일)
      * @param password 비밀번호 (평문)
      * @return 생성된 계정
-     * @throws AccountException 중복된 로그인 ID인 경우
+     * @throws DomainException 중복된 로그인 ID인 경우
      */
     public Account registerAccount(String loginId, String password) {
         // 1. 중복 확인
         if (accountRepository.existsByLoginId(loginId)) {
-            throw new AccountException("ACCOUNT_DUPLICATE_EMAIL", "이미 가입된 이메일입니다: " + loginId);
+            throw new DomainException("ACCOUNT_DUPLICATE_EMAIL", "이미 가입된 이메일입니다: " + loginId, HttpStatus.CONFLICT);
         }
 
         // 2. 계정 생성
@@ -63,26 +64,26 @@ public class AccountService {
      * @param loginId 로그인 ID (이메일)
      * @param password 비밀번호 (평문)
      * @return 계정 정보
-     * @throws AccountException 계정을 찾을 수 없거나 비밀번호가 일치하지 않는 경우
+     * @throws DomainException 계정을 찾을 수 없거나 비밀번호가 일치하지 않는 경우
      */
     @Transactional(readOnly = true)
     public Account loginAccount(String loginId, String password) {
         // 1. 계정 조회
         Account account = accountRepository.findByLoginId(loginId)
-                .orElseThrow(() -> new AccountException("ACCOUNT_NOT_FOUND", "계정을 찾을 수 없습니다: " + loginId));
+                .orElseThrow(() -> new DomainException("ACCOUNT_NOT_FOUND", "계정을 찾을 수 없습니다: " + loginId, HttpStatus.NOT_FOUND));
 
         // 2. 계정 상태 확인
         if (!account.isActive()) {
-            throw new AccountException("ACCOUNT_INACTIVE", "활성화되지 않은 계정입니다");
+            throw new DomainException("ACCOUNT_INACTIVE", "활성화되지 않은 계정입니다", HttpStatus.FORBIDDEN);
         }
 
         // 3. 기본 인증 수단 찾기
         BasicCredential basicCredential = account.findBasicCredential(loginId)
-                .orElseThrow(() -> new AccountException("ACCOUNT_NOT_FOUND", "인증 수단을 찾을 수 없습니다"));
+                .orElseThrow(() -> new DomainException("ACCOUNT_NOT_FOUND", "인증 수단을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
         // 4. 비밀번호 검증
         if (!passwordEncoder.matches(password, basicCredential.getHashedPassword())) {
-            throw new AccountException("ACCOUNT_INVALID_PASSWORD", "비밀번호가 올바르지 않습니다");
+            throw new DomainException("ACCOUNT_INVALID_PASSWORD", "비밀번호가 올바르지 않습니다", HttpStatus.UNAUTHORIZED);
         }
 
         // 5. 마지막 사용 시간 업데이트
@@ -98,7 +99,7 @@ public class AccountService {
     @Transactional(readOnly = true)
     public Account getAccount(AccountId accountId) {
         return accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountException("ACCOUNT_NOT_FOUND", "계정을 찾을 수 없습니다: " + accountId));
+                .orElseThrow(() -> new DomainException("ACCOUNT_NOT_FOUND", "계정을 찾을 수 없습니다: " + accountId, HttpStatus.NOT_FOUND));
     }
 
     /**
