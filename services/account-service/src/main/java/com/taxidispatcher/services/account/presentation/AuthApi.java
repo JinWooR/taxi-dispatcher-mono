@@ -2,6 +2,9 @@ package com.taxidispatcher.services.account.presentation;
 
 import com.taxidispatcher.services.account.application.dto.request.LoginRequest;
 import com.taxidispatcher.services.account.application.dto.request.RegisterRequest;
+import com.taxidispatcher.services.account.application.dto.response.LoginResponse;
+import com.taxidispatcher.services.account.application.dto.response.RegisterResponse;
+import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
@@ -34,7 +38,7 @@ public interface AuthApi {
                     description = "서버 오류"
             )
     })
-    Object register(@Valid @RequestBody RegisterRequest request);
+    ResponseEntity<CommonResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request);
 
     @Operation(summary = "로그인", description = "계정으로 로그인하여 JWT 토큰을 발급받습니다")
     @ApiResponses(value = {
@@ -56,5 +60,5 @@ public interface AuthApi {
                     description = "서버 오류"
             )
     })
-    Object login(@Valid @RequestBody LoginRequest request);
+    ResponseEntity<CommonResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request);
 }
