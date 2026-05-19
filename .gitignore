@@ -54,3 +54,6 @@ out/
 # Spring Boot
 application-*.properties
 application-*.yml
+
+# AI
+.claude

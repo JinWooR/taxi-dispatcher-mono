@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: driver-service
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          time_zone: UTC
+        format_sql: true
+        use_sql_comments: true
+    show-sql: false
+
+  jackson:
+    default-timezone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/driver_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  security:
+    user:
+      name: admin
+      password: admin123
+
+server:
+  port: 8083
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  override-with-generic-response: false
+
+logging:
+  level:
+    root: INFO
+    com.taxidispatcher: DEBUG
+    org.springframework.security: DEBUG

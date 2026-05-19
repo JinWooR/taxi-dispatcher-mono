@@ -18,6 +18,7 @@ services:
       # 초기화 스크립트 (번호 순서대로 실행됨)
       - ./infra/mysql/init-account-schema.sql:/docker-entrypoint-initdb.d/01-account-schema.sql
       - ./infra/mysql/init-account-data.sql:/docker-entrypoint-initdb.d/02-account-data.sql
+      - ./infra/mysql/init-driver-schema.sql:/docker-entrypoint-initdb.d/03-driver-schema.sql
     networks:
       - taxi-network
     healthcheck:
@@ -41,6 +42,29 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: 'false'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - taxi-network
+    restart: unless-stopped
+
+  # Driver Service
+  driver-service:
+    build:
+      context: .
+      dockerfile: services/driver-service/Dockerfile
+    container_name: driver-service
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/driver_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
       SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
