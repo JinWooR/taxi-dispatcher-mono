@@ -31,7 +31,7 @@ spring:
       password: admin123
 
 server:
-  port: 8081
+  port: ${SPRING_SERVER_PORT:8081}
   servlet:
     context-path: /
 
