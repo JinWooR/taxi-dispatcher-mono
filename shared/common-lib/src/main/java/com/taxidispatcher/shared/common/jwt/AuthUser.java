@@ -16,31 +16,36 @@ import lombok.NoArgsConstructor;
 public class AuthUser {
 
     /**
-     * Account ID (토큰의 sub claim)
+     * Account ID (토큰의 sub claim, UUID)
      */
-    private Long accountId;
+    private String accountId;
 
     /**
-     * 사용자 타입 (USER | DRIVER)
+     * 권한 (USER | DRIVER)
      */
-    private String type;
+    private String role;
 
     /**
-     * 이메일
+     * 도메인별 고유 ID (userId or driverId)
      */
-    private String email;
+    private String actor;
 
     /**
-     * 사용자 타입이 USER인지 확인
+     * 인증 수단 ID (credentialId)
+     */
+    private String credentialId;
+
+    /**
+     * 권한이 USER인지 확인
      */
     public boolean isUser() {
-        return "USER".equals(this.type);
+        return "USER".equals(this.role);
     }
 
     /**
-     * 사용자 타입이 DRIVER인지 확인
+     * 권한이 DRIVER인지 확인
      */
     public boolean isDriver() {
-        return "DRIVER".equals(this.type);
+        return "DRIVER".equals(this.role);
     }
 }

@@ -50,8 +50,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                log.debug("JWT 토큰 검증 성공 - accountId: {}, type: {}",
-                    authUser.getAccountId(), authUser.getType());
+                log.debug("JWT 토큰 검증 성공 - accountId: {}, role: {}, credentialId: {}",
+                    authUser.getAccountId(), authUser.getRole(), authUser.getCredentialId());
             }
 
         } catch (JwtException e) {

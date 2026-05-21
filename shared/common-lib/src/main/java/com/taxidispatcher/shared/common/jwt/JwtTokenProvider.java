@@ -1,45 +1,53 @@
 package com.taxidispatcher.shared.common.jwt;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Date;
+import java.util.Optional;
 
 /**
- * JWT 토큰 생성 및 검증
+ * JWT 토큰 생성 및 검증 (RS512)
+ * 실제 키는 JwtKeyConfig 빈에서 관리
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final JwtProperties jwtProperties;
+    private final Optional<PrivateKey> privateKey;
+    private final PublicKey publicKey;
+
+    @Value("${jwt.expiration:3600000}")
+    private long expiration;
 
     /**
      * 토큰 생성
      *
-     * @param accountId 계정 ID
-     * @param type      사용자 타입 (USER | DRIVER)
-     * @param email     이메일
+     * @param accountId     계정 ID (UUID)
+     * @param role          권한 (USER | DRIVER)
+     * @param actor         도메인별 고유 ID (userId or driverId)
+     * @param credentialId  인증 수단 ID
      * @return JWT 토큰
      */
-    public String generateToken(Long accountId, String type, String email) {
+    public String generateToken(String accountId, String role, String actor, String credentialId) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + jwtProperties.getExpiration());
+        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
-                .subject(String.valueOf(accountId))
-                .claim("type", type)
-                .claim("email", email)
-                .issuer(jwtProperties.getIssuer())
-                .audience().add(jwtProperties.getAudience()).and()
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                .setSubject(accountId)
+                .claim("role", role)
+                .claim("actor", actor)
+                .claim("credentialId", credentialId)
+                .setIssuer("taxi-dispatcher")
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(privateKey.orElseThrow(() -> new IllegalStateException("Private key is not available. This service does not issue tokens.")), SignatureAlgorithm.RS512)
                 .compact();
     }
 
@@ -55,9 +63,10 @@ public class JwtTokenProvider {
             Claims claims = parseToken(token);
 
             return AuthUser.builder()
-                    .accountId(Long.valueOf(claims.getSubject()))
-                    .type(claims.get("type", String.class))
-                    .email(claims.get("email", String.class))
+                    .accountId(claims.getSubject())
+                    .role(claims.get("role", String.class))
+                    .actor(claims.get("actor", String.class))
+                    .credentialId(claims.get("credentialId", String.class))
                     .build();
 
         } catch (ExpiredJwtException e) {
@@ -109,20 +118,10 @@ public class JwtTokenProvider {
      * @return Claims
      */
     private Claims parseToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(getSigningKey())
+        return Jwts.parserBuilder()
+                .setSigningKey(publicKey)
                 .build()
                 .parseClaimsJws(token)
-                .getPayload();
-    }
-
-    /**
-     * 서명 키 생성
-     *
-     * @return SecretKey
-     */
-    private SecretKey getSigningKey() {
-        byte[] keyBytes = jwtProperties.getSecret().getBytes();
-        return Keys.hmacShaKeyFor(keyBytes);
+                .getBody();
     }
 }
