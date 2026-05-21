@@ -9,4 +9,6 @@ include 'services:user-service'
 findProject(':services:user-service')?.name = 'user-service'
 include 'services:driver-service'
 findProject(':services:driver-service')?.name = 'driver-service'
+include 'services:dispatcher-service'
+findProject(':services:dispatcher-service')?.name = 'dispatcher-service'
 
