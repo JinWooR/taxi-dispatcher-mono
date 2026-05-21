@@ -30,7 +30,7 @@ public class OAuthCredentialJpaEntity extends CredentialJpaEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "oauth_kind", nullable = false, length = 20)
-    private OAuthKind oAuthKind;
+    private OAuthKind oauthKind;
 
     @Column(name = "iss", nullable = false, length = 255)
     private String iss;
@@ -41,9 +41,9 @@ public class OAuthCredentialJpaEntity extends CredentialJpaEntity {
     @Column(name = "email_link", length = 255)
     private String emailLink;
 
-    public OAuthCredentialJpaEntity(String credentialId, String accountId, OAuthKind oAuthKind, String iss, String sub, String emailLink, LocalDateTime registeredAt) {
+    public OAuthCredentialJpaEntity(String credentialId, String accountId, OAuthKind oauthKind, String iss, String sub, String emailLink, LocalDateTime registeredAt) {
         super(credentialId, accountId, registeredAt);
-        this.oAuthKind = oAuthKind;
+        this.oauthKind = oauthKind;
         this.iss = iss;
         this.sub = sub;
         this.emailLink = emailLink;
@@ -54,7 +54,7 @@ public class OAuthCredentialJpaEntity extends CredentialJpaEntity {
         return new OAuthCredential(
                 CredentialId.of(this.getCredentialId()),
                 AccountId.of(this.getAccountId()),
-                this.oAuthKind,
+                this.oauthKind,
                 this.iss,
                 this.sub,
                 this.emailLink
@@ -68,7 +68,7 @@ public class OAuthCredentialJpaEntity extends CredentialJpaEntity {
         return OAuthCredentialJpaEntity.builder()
                 .credentialId(domain.getCredentialId().getValue())
                 .accountId(domain.getAccountId().getValue())
-                .oAuthKind(domain.getOAuthKind())
+                .oauthKind(domain.getOauthKind())
                 .iss(domain.getIss())
                 .sub(domain.getSub())
                 .emailLink(domain.getEmailLink())

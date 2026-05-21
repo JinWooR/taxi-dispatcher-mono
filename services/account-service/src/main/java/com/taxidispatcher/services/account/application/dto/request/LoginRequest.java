@@ -22,10 +22,4 @@ public class LoginRequest {
 
     @NotBlank(message = "비밀번호는 필수입니다")
     private String password;
-
-    /**
-     * 사용자 타입 (기본값: USER)
-     * USER 또는 DRIVER
-     */
-    private String userType = "USER";
 }

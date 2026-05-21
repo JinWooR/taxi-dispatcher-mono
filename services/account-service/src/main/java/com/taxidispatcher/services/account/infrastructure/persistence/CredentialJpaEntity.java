@@ -26,17 +26,14 @@ import java.time.LocalDateTime;
 public abstract class CredentialJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "credential_id", unique = true, nullable = false, length = 36)
+    @Column(name = "credential_id", nullable = false, length = 36)
     private String credentialId;
 
     @Column(name = "account_id", nullable = false, length = 36)
     private String accountId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id", insertable = false, updatable = false, nullable = false)
+    @JoinColumn(name = "account_id", insertable = false, updatable = false)
     private AccountJpaEntity account;
 
     @Column(name = "registered_at", nullable = false)

@@ -44,7 +44,7 @@ public interface AuthApi {
     })
     ResponseEntity<CommonResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request);
 
-    @Operation(summary = "로그인", description = "계정으로 로그인하여 JWT 토큰을 발급받습니다")
+    @Operation(summary = "기본 로그인", description = "계정 인증 후 기본 토큰을 발급받습니다. 프로필 등록 전 단계에서 사용합니다")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -65,4 +65,48 @@ public interface AuthApi {
             )
     })
     ResponseEntity<CommonResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request);
+
+    @Operation(summary = "사용자 로그인", description = "사용자 권한으로 로그인하여 JWT 토큰을 발급받습니다")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그인 성공",
+                    content = @Content(schema = @Schema(type = "object"))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 (필수 파라미터 누락)"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패 (계정 없음, 비밀번호 오류)"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류"
+            )
+    })
+    ResponseEntity<CommonResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest request);
+
+    @Operation(summary = "기사 로그인", description = "기사 권한으로 로그인하여 JWT 토큰을 발급받습니다")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "로그인 성공",
+                    content = @Content(schema = @Schema(type = "object"))
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "잘못된 요청 (필수 파라미터 누락)"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "인증 실패 (계정 없음, 비밀번호 오류)"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "서버 오류"
+            )
+    })
+    ResponseEntity<CommonResponse<LoginResponse>> loginDriver(@Valid @RequestBody LoginRequest request);
 }

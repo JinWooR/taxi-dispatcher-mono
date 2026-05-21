@@ -3,6 +3,8 @@ package com.taxidispatcher.services.account.infrastructure.persistence;
 import com.taxidispatcher.services.account.domain.account.Account;
 import com.taxidispatcher.services.account.domain.account.AccountId;
 import com.taxidispatcher.services.account.domain.account.AccountStatus;
+import com.taxidispatcher.services.account.domain.credential.BasicCredential;
+import com.taxidispatcher.services.account.domain.credential.OAuthCredential;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +19,7 @@ import java.util.List;
  * Account JPA 엔티티
  */
 @Entity
-@Table(name = "accounts", indexes = {
-        @Index(name = "idx_account_id", columnList = "account_id", unique = true)
-})
+@Table(name = "accounts")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -27,16 +27,14 @@ import java.util.List;
 public class AccountJpaEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "account_id", unique = true, nullable = false, length = 36)
+    @Column(name = "account_id", nullable = false, length = 36)
     private String accountId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private AccountStatus status;
 
+    @Builder.Default
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CredentialJpaEntity> credentials = new ArrayList<>();
 
@@ -69,12 +67,25 @@ public class AccountJpaEntity {
      * 도메인 모델에서 JPA 엔티티로 변환
      */
     public static AccountJpaEntity fromDomain(Account domain) {
-        return AccountJpaEntity.builder()
+        AccountJpaEntity entity = AccountJpaEntity.builder()
                 .accountId(domain.getAccountId().getValue())
                 .status(domain.getStatus())
                 .createdAt(domain.getCreatedAt())
                 .updatedAt(domain.getUpdatedAt())
                 .build();
+
+        domain.getCredentials().forEach(credential -> {
+            CredentialJpaEntity credentialEntity;
+            if (credential instanceof BasicCredential basic) {
+                credentialEntity = BasicCredentialJpaEntity.fromDomain(basic);
+            } else {
+                credentialEntity = OAuthCredentialJpaEntity.fromDomain((OAuthCredential) credential);
+            }
+            credentialEntity.setAccount(entity);
+            entity.credentials.add(credentialEntity);
+        });
+
+        return entity;
     }
 
     /**

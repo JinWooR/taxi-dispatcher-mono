@@ -25,12 +25,22 @@ public class LoginResponse {
     private Long expiresIn;
 
     /**
-     * Account ID
+     * Account ID (UUID)
      */
     private String accountId;
 
     /**
-     * 로그인 ID (이메일)
+     * 권한 (USER | DRIVER)
      */
-    private String loginId;
+    private String role;
+
+    /**
+     * 도메인별 고유 ID (userId or driverId)
+     */
+    private String actor;
+
+    /**
+     * 인증 수단 ID (credentialId)
+     */
+    private String credentialId;
 }

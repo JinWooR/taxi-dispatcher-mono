@@ -15,14 +15,12 @@ USE account_db;
 -- Account 애그리게이트 루트
 -- 사용자 계정 정보 저장
 CREATE TABLE accounts (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '자동 증가 ID',
-    account_id VARCHAR(36) NOT NULL UNIQUE COMMENT '계정 UUID',
+    account_id VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '계정 UUID',
     status VARCHAR(20) NOT NULL COMMENT '계정 상태 (ACTIVE, INACTIVE, SUSPENDED)',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정 일시',
 
     -- 인덱스 정의
-    INDEX idx_account_id (account_id),
     INDEX idx_status (status),
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='계정 정보';
@@ -33,8 +31,7 @@ CREATE TABLE accounts (
 -- 기본 인증(BASIC) 또는 OAuth 인증(OAUTH) 정보 저장
 -- discriminator 컬럼(credential_type)으로 타입 구분
 CREATE TABLE credentials (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '자동 증가 ID',
-    credential_id VARCHAR(36) NOT NULL UNIQUE COMMENT '크레덴셜 UUID',
+    credential_id VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '크레덴셜 UUID',
     account_id VARCHAR(36) NOT NULL COMMENT '계정 UUID (FK)',
     credential_type VARCHAR(20) NOT NULL COMMENT '크레덴셜 타입 (BASIC, OAUTH)',
     registered_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록 일시',
@@ -57,7 +54,6 @@ CREATE TABLE credentials (
         ON DELETE CASCADE,
 
     -- 인덱스
-    INDEX idx_credential_id (credential_id),
     INDEX idx_account_id (account_id),
     INDEX idx_credential_type (credential_type),
     INDEX idx_login_id (login_id),

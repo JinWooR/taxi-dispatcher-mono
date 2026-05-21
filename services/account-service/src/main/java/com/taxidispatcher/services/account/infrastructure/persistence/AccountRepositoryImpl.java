@@ -18,50 +18,45 @@ import java.util.Optional;
 public class AccountRepositoryImpl implements AccountRepository {
 
     private final AccountJpaRepository jpaRepository;
+    private final BasicCredentialJpaRepository basicCredentialJpaRepository;
+    private final OAuthCredentialJpaRepository oAuthCredentialJpaRepository;
 
     @Override
     public Account save(Account account) {
         AccountJpaEntity entity = AccountJpaEntity.fromDomain(account);
 
-        // 기존 엔티티가 있으면 업데이트
-        Optional<AccountJpaEntity> existing = jpaRepository.findByAccountId(account.getAccountId().getValue());
-
         AccountJpaEntity saved;
+        Optional<AccountJpaEntity> existing = jpaRepository.findById(account.getAccountId().getValue());
         if (existing.isPresent()) {
-            AccountJpaEntity existingEntity = existing.get();
-            existingEntity.updateFromDomain(account);
-            saved = jpaRepository.save(existingEntity);
+            existing.get().updateFromDomain(account);
+            saved = jpaRepository.save(existing.get());
         } else {
             saved = jpaRepository.save(entity);
         }
-
-        // Credential 저장 (필요시)
-        account.getCredentials().forEach(credential -> {
-            // JPA에서 자동 저장됨 (Cascade)
-        });
 
         return saved.toDomain();
     }
 
     @Override
     public Optional<Account> findById(AccountId accountId) {
-        return jpaRepository.findByAccountId(accountId.getValue())
+        return jpaRepository.findById(accountId.getValue())
                 .map(AccountJpaEntity::toDomain);
     }
 
     @Override
     public Optional<Account> findByLoginId(String loginId) {
-        return jpaRepository.findByLoginId(loginId)
+        return basicCredentialJpaRepository.findByLoginId(loginId)
+                .flatMap(credential -> jpaRepository.findById(credential.getAccountId()))
                 .map(AccountJpaEntity::toDomain);
     }
 
     @Override
     public boolean existsByAccountId(AccountId accountId) {
-        return jpaRepository.existsByAccountId(accountId.getValue());
+        return jpaRepository.existsById(accountId.getValue());
     }
 
     @Override
     public boolean existsByLoginId(String loginId) {
-        return jpaRepository.existsByLoginId(loginId);
+        return basicCredentialJpaRepository.existsByLoginId(loginId);
     }
 }

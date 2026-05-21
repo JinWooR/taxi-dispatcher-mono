@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class OAuthCredential extends Credential {
 
-    private OAuthKind oAuthKind;    // 인증 제공자 (GOOGLE, APPLE, KAKAO 등)
+    private OAuthKind oauthKind;    // 인증 제공자 (GOOGLE, APPLE, KAKAO 등)
     private String iss;             // 발급자 (issuer)
     private String sub;             // 발급 주체 (subject - 사용자 고유 ID)
     private String emailLink;       // 이메일 표기용
@@ -17,13 +17,13 @@ public class OAuthCredential extends Credential {
     public OAuthCredential(
             CredentialId credentialId,
             AccountId accountId,
-            OAuthKind oAuthKind,
+            OAuthKind oauthKind,
             String iss,
             String sub,
             String emailLink
     ) {
         super(credentialId, accountId);
-        this.oAuthKind = Objects.requireNonNull(oAuthKind, "oAuthKind cannot be null");
+        this.oauthKind = Objects.requireNonNull(oauthKind, "oauthKind cannot be null");
         this.iss = Objects.requireNonNull(iss, "iss cannot be null");
         this.sub = Objects.requireNonNull(sub, "sub cannot be null");
         this.emailLink = emailLink; // nullable
@@ -34,8 +34,8 @@ public class OAuthCredential extends Credential {
         super();
     }
 
-    public OAuthKind getOAuthKind() {
-        return oAuthKind;
+    public OAuthKind getOauthKind() {
+        return oauthKind;
     }
 
     public String getIss() {
