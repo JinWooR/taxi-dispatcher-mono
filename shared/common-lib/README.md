@@ -56,6 +56,35 @@ dependencies {
 
 ---
 
+## 🔄 AutoConfiguration
+
+`CommonLibAutoConfiguration`을 통해 common-lib의 Bean이 각 서비스에 자동 등록됩니다.
+
+각 서비스에서 별도의 `@ComponentScan` 설정 없이 다음 Bean들이 자동 등록됩니다:
+- `JwtTokenProvider` (토큰 발급/검증)
+- `JwtAuthenticationFilter` (인증 필터)
+- `JwtKeyConfig` (RSA 키 로드, `jwt.privateKey`/`jwt.publicKey` 환경변수 필요)
+- `BaseOpenApiConfig` 등 공통 설정
+
+### 동작 원리
+
+- `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`에 등록
+- Spring Boot가 시작 시 자동으로 로드
+- `@ComponentScan(basePackages = "com.taxidispatcher.shared.common")` 적용
+
+### 각 서비스 사용 예
+
+```java
+@SpringBootApplication  // 별도 ComponentScan 불필요
+public class AccountServiceApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(AccountServiceApplication.class, args);
+    }
+}
+```
+
+---
+
 ## ⚙️ 설정 (application.yml)
 
 ```yaml

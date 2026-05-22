@@ -21,7 +21,12 @@ public class AuthUser {
     private String accountId;
 
     /**
-     * 권한 (USER | DRIVER)
+     * 토큰 타입 (ACCESS | REFRESH)
+     */
+    private String type;
+
+    /**
+     * 권한 (USER | DRIVER | NONE)
      */
     private String role;
 

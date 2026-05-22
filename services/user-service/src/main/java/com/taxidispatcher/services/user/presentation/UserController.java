@@ -4,17 +4,15 @@ import com.taxidispatcher.services.user.application.dto.request.RegisterUserRequ
 import com.taxidispatcher.services.user.application.dto.request.UpdateUserRequest;
 import com.taxidispatcher.services.user.application.dto.response.UserProfileResponse;
 import com.taxidispatcher.services.user.application.service.UserService;
+import com.taxidispatcher.shared.common.jwt.AuthUser;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 사용자 프로필 REST API
- */
 @RestController
 @RequestMapping("/users")
 @Validated
@@ -28,11 +26,12 @@ public class UserController implements UserApi {
 
     @Override
     @PostMapping
-    public ResponseEntity<CommonResponse<UserProfileResponse>> registerProfile(@Valid @RequestBody RegisterUserRequest request) {
-        String accountId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<CommonResponse<UserProfileResponse>> registerProfile(
+            @AuthenticationPrincipal AuthUser authUser,
+            @Valid @RequestBody RegisterUserRequest request) {
 
         UserProfileResponse response = userService.registerProfile(
-                accountId,
+                authUser.getAccountId(),
                 request.getName(),
                 request.getPhone()
         );
@@ -43,21 +42,22 @@ public class UserController implements UserApi {
 
     @Override
     @GetMapping("/me")
-    public ResponseEntity<CommonResponse<UserProfileResponse>> getMyProfile() {
-        String accountId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<CommonResponse<UserProfileResponse>> getMyProfile(
+            @AuthenticationPrincipal AuthUser authUser) {
 
-        UserProfileResponse response = userService.getMyProfile(accountId);
+        UserProfileResponse response = userService.getMyProfile(authUser.getAccountId());
 
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
     @Override
     @PutMapping("/me")
-    public ResponseEntity<CommonResponse<UserProfileResponse>> updateMyProfile(@Valid @RequestBody UpdateUserRequest request) {
-        String accountId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<CommonResponse<UserProfileResponse>> updateMyProfile(
+            @AuthenticationPrincipal AuthUser authUser,
+            @Valid @RequestBody UpdateUserRequest request) {
 
         UserProfileResponse response = userService.updateMyProfile(
-                accountId,
+                authUser.getAccountId(),
                 request.getName(),
                 request.getPhone()
         );
@@ -67,10 +67,10 @@ public class UserController implements UserApi {
 
     @Override
     @DeleteMapping("/me")
-    public ResponseEntity<Void> deleteMyProfile() {
-        String accountId = SecurityContextHolder.getContext().getAuthentication().getName();
+    public ResponseEntity<Void> deleteMyProfile(
+            @AuthenticationPrincipal AuthUser authUser) {
 
-        userService.deleteMyProfile(accountId);
+        userService.deleteMyProfile(authUser.getAccountId());
 
         return ResponseEntity.noContent().build();
     }

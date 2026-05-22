@@ -1,15 +1,18 @@
 package com.taxidispatcher.shared.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taxidispatcher.shared.common.jwt.JwtAuthenticationFilter;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 public abstract class BaseSecurityConfig {
 
     protected final ObjectMapper objectMapper;
+    protected final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     // 모든 서비스가 공통으로 허용하는 경로
     private static final String[] COMMON_PUBLIC_PATHS = {
@@ -45,8 +49,8 @@ public abstract class BaseSecurityConfig {
                 .authenticationEntryPoint(authenticationEntryPoint())
                 .accessDeniedHandler(accessDeniedHandler())
             )
-            .sessionManagement(session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -70,6 +74,7 @@ public abstract class BaseSecurityConfig {
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
         return (request, response, authException) -> {
+            authException.printStackTrace();
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 

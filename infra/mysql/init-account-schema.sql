@@ -62,9 +62,29 @@ CREATE TABLE credentials (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='인증 정보 (기본/OAuth)';
 
 -- ============================================================================
+-- 3. Refresh Tokens 테이블
+-- ============================================================================
+CREATE TABLE refresh_tokens (
+    token_id VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '토큰 UUID',
+    account_id VARCHAR(36) NOT NULL COMMENT '계정 UUID (FK)',
+    token_hash VARCHAR(64) NOT NULL COMMENT 'SHA-256 해시된 토큰 값',
+    expires_at TIMESTAMP NOT NULL COMMENT '만료 일시',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
+
+    CONSTRAINT fk_refresh_tokens_account_id
+        FOREIGN KEY (account_id)
+        REFERENCES accounts(account_id)
+        ON DELETE CASCADE,
+
+    INDEX idx_account_id (account_id),
+    INDEX idx_expires_at (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Refresh Token 정보';
+
+-- ============================================================================
 -- 데이터베이스 초기화 완료
 -- ============================================================================
 -- 스키마 생성 완료: account_db
 -- 테이블:
 --   - accounts: 사용자 계정 정보
 --   - credentials: 인증 정보 (BASIC/OAUTH)
+--   - refresh_tokens: Refresh Token 정보

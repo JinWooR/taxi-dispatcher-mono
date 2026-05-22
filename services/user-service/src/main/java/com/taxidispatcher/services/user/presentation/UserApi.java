@@ -4,6 +4,7 @@ import com.taxidispatcher.services.user.application.dto.request.RegisterUserRequ
 import com.taxidispatcher.services.user.application.dto.request.UpdateUserRequest;
 import com.taxidispatcher.services.user.application.dto.response.UserProfileResponse;
 import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
+import com.taxidispatcher.shared.common.jwt.AuthUser;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
 
 /**
@@ -28,24 +30,30 @@ public interface UserApi {
     @ApiResponse(responseCode = "409", description = "이미 등록된 프로필", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
-    ResponseEntity<CommonResponse<UserProfileResponse>> registerProfile(@Valid @RequestBody RegisterUserRequest request);
+    ResponseEntity<CommonResponse<UserProfileResponse>> registerProfile(
+            @AuthenticationPrincipal AuthUser authUser,
+            @Valid @RequestBody RegisterUserRequest request);
 
     @Operation(summary = "내 프로필 조회", description = "로그인한 사용자의 프로필 정보 조회")
     @ApiResponse(responseCode = "200", description = "프로필 조회 성공")
     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
-    ResponseEntity<CommonResponse<UserProfileResponse>> getMyProfile();
+    ResponseEntity<CommonResponse<UserProfileResponse>> getMyProfile(
+            @AuthenticationPrincipal AuthUser authUser);
 
     @Operation(summary = "프로필 수정", description = "로그인한 사용자의 프로필 정보 수정")
     @ApiResponse(responseCode = "200", description = "프로필 수정 성공")
     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
-    ResponseEntity<CommonResponse<UserProfileResponse>> updateMyProfile(@Valid @RequestBody UpdateUserRequest request);
+    ResponseEntity<CommonResponse<UserProfileResponse>> updateMyProfile(
+            @AuthenticationPrincipal AuthUser authUser,
+            @Valid @RequestBody UpdateUserRequest request);
 
     @Operation(summary = "프로필 삭제", description = "로그인한 사용자의 프로필 삭제 (Soft delete)")
     @ApiResponse(responseCode = "204", description = "프로필 삭제 성공")
     @ApiResponse(responseCode = "404", description = "프로필을 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
-    ResponseEntity<Void> deleteMyProfile();
+    ResponseEntity<Void> deleteMyProfile(
+            @AuthenticationPrincipal AuthUser authUser);
 }

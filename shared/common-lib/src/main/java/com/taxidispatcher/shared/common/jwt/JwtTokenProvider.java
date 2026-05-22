@@ -11,10 +11,6 @@ import java.security.PublicKey;
 import java.util.Date;
 import java.util.Optional;
 
-/**
- * JWT 토큰 생성 및 검증 (RS512)
- * 실제 키는 JwtKeyConfig 빈에서 관리
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -23,47 +19,54 @@ public class JwtTokenProvider {
     private final Optional<PrivateKey> privateKey;
     private final PublicKey publicKey;
 
-    @Value("${jwt.expiration:3600000}")
-    private long expiration;
+    @Value("${jwt.expiration.access:0}")
+    private long accessExpiration;
 
-    /**
-     * 토큰 생성
-     *
-     * @param accountId     계정 ID (UUID)
-     * @param role          권한 (USER | DRIVER)
-     * @param actor         도메인별 고유 ID (userId or driverId)
-     * @param credentialId  인증 수단 ID
-     * @return JWT 토큰
-     */
-    public String generateToken(String accountId, String role, String actor, String credentialId) {
+    @Value("${jwt.expiration.refresh:0}")
+    private long refreshExpiration;
+
+    public String generateAccessToken(String accountId, String role, String actor, String credentialId) {
+        if (accessExpiration == 0) {
+            throw new IllegalStateException("jwt.expiration.access is not configured.");
+        }
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expiration);
 
         return Jwts.builder()
                 .setSubject(accountId)
+                .claim("type", "ACCESS")
                 .claim("role", role)
                 .claim("actor", actor)
                 .claim("credentialId", credentialId)
                 .setIssuer("taxi-dispatcher")
                 .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(privateKey.orElseThrow(() -> new IllegalStateException("Private key is not available. This service does not issue tokens.")), SignatureAlgorithm.RS512)
+                .setExpiration(new Date(now.getTime() + accessExpiration))
+                .signWith(resolvePrivateKey(), SignatureAlgorithm.RS512)
                 .compact();
     }
 
-    /**
-     * 토큰에서 사용자 정보 추출
-     *
-     * @param token JWT 토큰
-     * @return AuthUser 인증 사용자 정보
-     * @throws JwtException 토큰 검증 실패 시
-     */
+    public String generateRefreshToken(String tokenId) {
+        if (refreshExpiration == 0) {
+            throw new IllegalStateException("jwt.expiration.refresh is not configured.");
+        }
+        Date now = new Date();
+
+        return Jwts.builder()
+                .claim("type", "REFRESH")
+                .claim("tokenId", tokenId)
+                .setIssuer("taxi-dispatcher")
+                .setIssuedAt(now)
+                .setExpiration(new Date(now.getTime() + refreshExpiration))
+                .signWith(resolvePrivateKey(), SignatureAlgorithm.RS512)
+                .compact();
+    }
+
     public AuthUser validateAndGetUser(String token) {
         try {
             Claims claims = parseToken(token);
 
             return AuthUser.builder()
                     .accountId(claims.getSubject())
+                    .type(claims.get("type", String.class))
                     .role(claims.get("role", String.class))
                     .actor(claims.get("actor", String.class))
                     .credentialId(claims.get("credentialId", String.class))
@@ -95,12 +98,10 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 토큰 검증 (사용자 정보 반환 없음)
-     *
-     * @param token JWT 토큰
-     * @return 유효 여부
-     */
+    public String extractTokenId(String token) {
+        return parseToken(token).get("tokenId", String.class);
+    }
+
     public boolean isValidToken(String token) {
         try {
             parseToken(token);
@@ -111,17 +112,16 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * Claims 파싱
-     *
-     * @param token JWT 토큰
-     * @return Claims
-     */
     private Claims parseToken(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(publicKey)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    private PrivateKey resolvePrivateKey() {
+        return privateKey.orElseThrow(() ->
+                new IllegalStateException("Private key is not available. This service does not issue tokens."));
     }
 }
