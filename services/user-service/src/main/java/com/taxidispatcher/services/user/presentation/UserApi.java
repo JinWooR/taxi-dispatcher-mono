@@ -3,6 +3,7 @@ package com.taxidispatcher.services.user.presentation;
 import com.taxidispatcher.services.user.application.dto.request.RegisterUserRequest;
 import com.taxidispatcher.services.user.application.dto.request.UpdateUserRequest;
 import com.taxidispatcher.services.user.application.dto.response.UserProfileResponse;
+import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * Spring MVC 매핑 어노테이션은 UserController에서 직접 선언
  */
 @Tag(name = "User", description = "사용자 프로필 관리")
-@SecurityRequirement(name = "Bearer Authentication")
+@SecurityRequirement(name = BaseOpenApiConfig.ACCESS_TOKEN_SCHEME)
 public interface UserApi {
 
     @Operation(summary = "프로필 등록", description = "새로운 사용자 프로필 등록")
