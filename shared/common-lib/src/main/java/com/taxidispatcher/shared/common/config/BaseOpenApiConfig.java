@@ -3,11 +3,8 @@ package com.taxidispatcher.shared.common.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
-
-import java.util.List;
 
 public abstract class BaseOpenApiConfig {
 
@@ -15,12 +12,15 @@ public abstract class BaseOpenApiConfig {
     public static final String REFRESH_TOKEN_SCHEME = "refreshToken";
     public static final String API_KEY_SCHEME = "apiKey";
 
+    /**
+     * 전역 SecurityRequirement는 설정하지 않음
+     * 각 API/Controller에서 @SecurityRequirement 어노테이션으로 명시적 지정
+     */
     @Bean
     public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(apiInfo())
-                .components(buildComponents())
-                .security(buildSecurityRequirements());
+                .components(buildComponents());
     }
 
     protected abstract Info apiInfo();
@@ -29,10 +29,6 @@ public abstract class BaseOpenApiConfig {
         return new Components()
                 .addSecuritySchemes(ACCESS_TOKEN_SCHEME, accessTokenScheme())
                 .addSecuritySchemes(API_KEY_SCHEME, apiKeyScheme());
-    }
-
-    protected List<SecurityRequirement> buildSecurityRequirements() {
-        return List.of(new SecurityRequirement().addList(ACCESS_TOKEN_SCHEME));
     }
 
     protected SecurityScheme accessTokenScheme() {
