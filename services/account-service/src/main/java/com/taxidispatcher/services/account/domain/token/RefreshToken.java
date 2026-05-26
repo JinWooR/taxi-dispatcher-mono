@@ -10,8 +10,8 @@ public class RefreshToken {
     private final TokenId tokenId;
     private final AccountId accountId;
     private final String tokenHash;
-    private final String role;
-    private final String actor;
+    private String role;
+    private String actor;
     private final LocalDateTime expiresAt;
     private final LocalDateTime createdAt;
 
@@ -38,6 +38,11 @@ public class RefreshToken {
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(expiresAt);
+    }
+
+    public void updateRole(String role, String actor) {
+        this.role = Objects.requireNonNull(role);
+        this.actor = actor;
     }
 
     public TokenId getTokenId() { return tokenId; }

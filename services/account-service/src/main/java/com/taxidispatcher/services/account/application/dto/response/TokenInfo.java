@@ -22,4 +22,7 @@ public class TokenInfo {
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime refreshExpiresAt;
+
+    private String role;
+    private String actor;
 }

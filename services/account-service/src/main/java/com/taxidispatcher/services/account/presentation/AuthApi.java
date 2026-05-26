@@ -74,4 +74,22 @@ public interface AuthApi {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     ResponseEntity<CommonResponse<Void>> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
+
+    @Operation(summary = "사용자 권한 승격", description = "Refresh Token으로 USER 권한 토큰을 발급받습니다. 사용자 프로필 등록 후 사용")
+    @SecurityRequirement(name = BaseOpenApiConfig.REFRESH_TOKEN_SCHEME)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "승격 성공"),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    ResponseEntity<CommonResponse<LoginResponse>> upgradeUser(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
+
+    @Operation(summary = "기사 권한 승격", description = "Refresh Token으로 DRIVER 권한 토큰을 발급받습니다. 기사 프로필 등록 후 사용")
+    @SecurityRequirement(name = BaseOpenApiConfig.REFRESH_TOKEN_SCHEME)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "승격 성공"),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    ResponseEntity<CommonResponse<LoginResponse>> upgradeDriver(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
 }

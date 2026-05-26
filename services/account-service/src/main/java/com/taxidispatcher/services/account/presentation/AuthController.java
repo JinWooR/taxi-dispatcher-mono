@@ -75,6 +75,20 @@ public class AuthController implements AuthApi {
         return ResponseEntity.ok(CommonResponse.success(null, "로그아웃 성공"));
     }
 
+    @Override
+    @PostMapping("/upgrade/user")
+    public ResponseEntity<CommonResponse<LoginResponse>> upgradeUser(@RequestHeader("Authorization") String bearerToken) {
+        LoginResponse response = authService.upgradeRole(extractBearer(bearerToken), "USER");
+        return ResponseEntity.ok(CommonResponse.success(response, "사용자 권한 승격 성공"));
+    }
+
+    @Override
+    @PostMapping("/upgrade/driver")
+    public ResponseEntity<CommonResponse<LoginResponse>> upgradeDriver(@RequestHeader("Authorization") String bearerToken) {
+        LoginResponse response = authService.upgradeRole(extractBearer(bearerToken), "DRIVER");
+        return ResponseEntity.ok(CommonResponse.success(response, "기사 권한 승격 성공"));
+    }
+
     private String extractCredentialId(Account account, String loginId) {
         return account.findBasicCredential(loginId)
                 .map(cred -> cred.getCredentialId().getValue())

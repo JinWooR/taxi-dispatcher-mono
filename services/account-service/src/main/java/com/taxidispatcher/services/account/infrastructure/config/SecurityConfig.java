@@ -30,7 +30,9 @@ public class SecurityConfig extends BaseSecurityConfig {
             "/auth/login/user",
             "/auth/login/driver",
             "/auth/refresh",
-            "/auth/logout"
+            "/auth/logout",
+            "/auth/upgrade/user",
+            "/auth/upgrade/driver"
         };
     }
 }
