@@ -1,11 +1,13 @@
 package com.taxidispatcher.shared.common.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.taxidispatcher.shared.common.jwt.InternalApiKeyFilter;
 import com.taxidispatcher.shared.common.jwt.JwtAuthenticationFilter;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -20,6 +22,7 @@ public abstract class BaseSecurityConfig {
 
     protected final ObjectMapper objectMapper;
     protected final JwtAuthenticationFilter jwtAuthenticationFilter;
+    protected final InternalApiKeyFilter internalApiKeyFilter;
 
     // 모든 서비스가 공통으로 허용하는 경로
     private static final String[] COMMON_PUBLIC_PATHS = {
@@ -31,7 +34,31 @@ public abstract class BaseSecurityConfig {
         "/actuator/health/**"
     };
 
+    /**
+     * 내부 API용 SecurityFilterChain
+     * /internal/** 경로에 ApiKey 인증 적용
+     */
     @Bean
+    @Order(1)
+    public SecurityFilterChain internalSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/internal/**")
+            .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(internalApiKeyFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    /**
+     * 외부 API용 SecurityFilterChain
+     * JWT 인증 적용
+     */
+    @Bean
+    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         String[] allPublicPaths = combinePublicPaths();
 
