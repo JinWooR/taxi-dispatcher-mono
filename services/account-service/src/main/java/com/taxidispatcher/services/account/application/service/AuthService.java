@@ -49,6 +49,8 @@ public class AuthService {
                 tokenId,
                 account.getAccountId(),
                 hashToken(refreshTokenStr),
+                role,
+                actor,
                 LocalDateTime.now().plusSeconds(refreshExpiration / 1000)
         );
         refreshTokenRepository.save(refreshToken);
@@ -93,7 +95,10 @@ public class AuthService {
                 .findFirst().orElse(null);
 
         String newAccessToken = jwtTokenProvider.generateAccessToken(
-                account.getAccountId().getValue(), "NONE", null, credentialId);
+                account.getAccountId().getValue(),
+                refreshToken.getRole(),
+                refreshToken.getActor(),
+                credentialId);
 
         return TokenInfo.builder()
                 .accessToken(newAccessToken)

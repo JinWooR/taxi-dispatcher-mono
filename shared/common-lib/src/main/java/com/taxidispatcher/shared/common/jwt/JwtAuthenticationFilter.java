@@ -37,9 +37,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String token = extractToken(request);
 
-            if (StringUtils.hasText(token) && jwtTokenProvider.isValidToken(token)) {
-                // 토큰 검증 완료
-                AuthUser authUser = jwtTokenProvider.validateAndGetUser(token);
+            if (StringUtils.hasText(token)) {
+                AuthUser authUser = jwtTokenProvider.validateAndGetAccessUser(token);
 
                 // Spring Security Context에 인증 정보 설정 (권한: ROLE_NONE / ROLE_USER / ROLE_DRIVER)
                 UsernamePasswordAuthenticationToken authentication =

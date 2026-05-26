@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,7 +63,6 @@ public class AuthController implements AuthApi {
 
     @Override
     @PostMapping("/refresh")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommonResponse<TokenInfo>> refresh(@RequestHeader("Authorization") String bearerToken) {
         TokenInfo tokenInfo = authService.refreshAccessToken(extractBearer(bearerToken));
         return ResponseEntity.ok(CommonResponse.success(tokenInfo, "액세스 토큰 재발급 성공"));
@@ -72,7 +70,6 @@ public class AuthController implements AuthApi {
 
     @Override
     @PostMapping("/logout")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<CommonResponse<Void>> logout(@RequestHeader("Authorization") String bearerToken) {
         authService.logout(extractBearer(bearerToken));
         return ResponseEntity.ok(CommonResponse.success(null, "로그아웃 성공"));

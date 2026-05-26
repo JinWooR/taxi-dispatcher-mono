@@ -68,6 +68,8 @@ CREATE TABLE refresh_tokens (
     token_id VARCHAR(36) NOT NULL PRIMARY KEY COMMENT '토큰 UUID',
     account_id VARCHAR(36) NOT NULL COMMENT '계정 UUID (FK)',
     token_hash VARCHAR(64) NOT NULL COMMENT 'SHA-256 해시된 토큰 값',
+    role VARCHAR(20) NOT NULL COMMENT '발급 시점 권한 (NONE/USER/DRIVER)',
+    actor VARCHAR(36) COMMENT '발급 시점 도메인 ID (userId/driverId)',
     expires_at TIMESTAMP NOT NULL COMMENT '만료 일시',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
 

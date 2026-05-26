@@ -32,6 +32,12 @@ public class RefreshTokenJpaEntity {
     @Column(name = "token_hash", nullable = false, length = 64)
     private String tokenHash;
 
+    @Column(name = "role", nullable = false, length = 20)
+    private String role;
+
+    @Column(name = "actor", length = 36)
+    private String actor;
+
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
@@ -43,6 +49,8 @@ public class RefreshTokenJpaEntity {
                 TokenId.of(this.tokenId),
                 AccountId.of(this.accountId),
                 this.tokenHash,
+                this.role,
+                this.actor,
                 this.expiresAt
         );
     }
@@ -52,6 +60,8 @@ public class RefreshTokenJpaEntity {
                 .tokenId(domain.getTokenId().getValue())
                 .accountId(domain.getAccountId().getValue())
                 .tokenHash(domain.getTokenHash())
+                .role(domain.getRole())
+                .actor(domain.getActor())
                 .expiresAt(domain.getExpiresAt())
                 .createdAt(domain.getCreatedAt())
                 .build();

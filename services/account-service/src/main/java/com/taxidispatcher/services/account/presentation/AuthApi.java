@@ -8,8 +8,7 @@ import com.taxidispatcher.services.account.application.dto.response.TokenInfo;
 import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -65,7 +64,7 @@ public interface AuthApi {
             @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseEntity<CommonResponse<TokenInfo>> refresh(@RequestHeader("Authorization") String bearerToken);
+    ResponseEntity<CommonResponse<TokenInfo>> refresh(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
 
     @Operation(summary = "로그아웃", description = "Refresh Token을 삭제하여 로그아웃합니다")
     @SecurityRequirement(name = BaseOpenApiConfig.REFRESH_TOKEN_SCHEME)
@@ -74,5 +73,5 @@ public interface AuthApi {
             @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseEntity<CommonResponse<Void>> logout(@RequestHeader("Authorization") String bearerToken);
+    ResponseEntity<CommonResponse<Void>> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
 }

@@ -98,6 +98,14 @@ public class JwtTokenProvider {
         }
     }
 
+    public AuthUser validateAndGetAccessUser(String token) {
+        AuthUser authUser = validateAndGetUser(token);
+        if (!"ACCESS".equals(authUser.getType())) {
+            throw new JwtException("INVALID_TOKEN_TYPE", "Access Token이 아닙니다");
+        }
+        return authUser;
+    }
+
     public String extractTokenId(String token) {
         return parseToken(token).get("tokenId", String.class);
     }
