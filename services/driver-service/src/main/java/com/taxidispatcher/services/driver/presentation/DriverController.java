@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,7 @@ public class DriverController implements DriverApi {
 
     @Override
     @PostMapping
+    @PreAuthorize("hasAnyRole('NONE', 'DRIVER')")
     public ResponseEntity<CommonResponse<DriverResponse>> register(@Valid @RequestBody RegisterDriverRequest request) {
         String accountId = getAccountIdFromContext();
         Driver driver = driverService.registerDriver(accountId, request);
@@ -43,6 +45,7 @@ public class DriverController implements DriverApi {
 
     @Override
     @GetMapping("/me")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<DriverResponse>> getMe() {
         String accountId = getAccountIdFromContext();
         Driver driver = driverService.getDriverByAccountId(accountId);
@@ -51,6 +54,7 @@ public class DriverController implements DriverApi {
 
     @Override
     @PutMapping("/me")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<DriverResponse>> updateProfile(@Valid @RequestBody UpdateDriverRequest request) {
         String accountId = getAccountIdFromContext();
         Driver driver = driverService.updateDriver(accountId, request);
@@ -59,6 +63,7 @@ public class DriverController implements DriverApi {
 
     @Override
     @PatchMapping("/me/status")
+    @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<Void>> changeStatus(@Valid @RequestBody ChangeStatusRequest request) {
         String accountId = getAccountIdFromContext();
         driverService.changeStatus(accountId, request.getStatus());
@@ -66,6 +71,7 @@ public class DriverController implements DriverApi {
     }
 
     @GetMapping("/available")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonResponse<Object>> getAvailableDrivers() {
         var drivers = driverService.getAvailableDrivers()
                 .stream()

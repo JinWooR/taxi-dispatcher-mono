@@ -9,6 +9,7 @@ import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,7 @@ public class UserController implements UserApi {
 
     @Override
     @PostMapping
+    @PreAuthorize("hasAnyRole('NONE', 'USER')")
     public ResponseEntity<CommonResponse<UserProfileResponse>> registerProfile(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody RegisterUserRequest request) {
@@ -42,6 +44,7 @@ public class UserController implements UserApi {
 
     @Override
     @GetMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonResponse<UserProfileResponse>> getMyProfile(
             @AuthenticationPrincipal AuthUser authUser) {
 
@@ -52,6 +55,7 @@ public class UserController implements UserApi {
 
     @Override
     @PutMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CommonResponse<UserProfileResponse>> updateMyProfile(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody UpdateUserRequest request) {
@@ -67,6 +71,7 @@ public class UserController implements UserApi {
 
     @Override
     @DeleteMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteMyProfile(
             @AuthenticationPrincipal AuthUser authUser) {
 

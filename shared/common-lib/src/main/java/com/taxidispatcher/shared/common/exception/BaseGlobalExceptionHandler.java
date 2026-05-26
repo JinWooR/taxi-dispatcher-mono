@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -80,6 +81,26 @@ public abstract class BaseGlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    }
+
+    /**
+     * 접근 권한 부족 처리
+     * @PreAuthorize 검증 실패 시 발생하는 AuthorizationDeniedException 포함
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<CommonResponse<?>> handleAccessDeniedException(
+            AccessDeniedException e,
+            HttpServletRequest request) {
+
+        log.warn("접근 권한 부족: message={}", e.getMessage());
+
+        CommonResponse<?> response = CommonResponse.error(
+                "FORBIDDEN",
+                "접근 권한이 없습니다",
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.taxidispatcher.shared.common.jwt;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -40,12 +41,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 토큰 검증 완료
                 AuthUser authUser = jwtTokenProvider.validateAndGetUser(token);
 
-                // Spring Security Context에 인증 정보 설정
+                // Spring Security Context에 인증 정보 설정 (권한: ROLE_NONE / ROLE_USER / ROLE_DRIVER)
                 UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                         authUser,
                         null,
-                        List.of()  // 권한 (필요시 추가)
+                        List.of(new SimpleGrantedAuthority("ROLE_" + authUser.getRole()))
                     );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
