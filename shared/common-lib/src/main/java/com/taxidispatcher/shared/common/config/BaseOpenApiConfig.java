@@ -13,6 +13,7 @@ public abstract class BaseOpenApiConfig {
 
     public static final String ACCESS_TOKEN_SCHEME = "accessToken";
     public static final String REFRESH_TOKEN_SCHEME = "refreshToken";
+    public static final String API_KEY_SCHEME = "apiKey";
 
     @Bean
     public OpenAPI openAPI() {
@@ -26,7 +27,8 @@ public abstract class BaseOpenApiConfig {
 
     protected Components buildComponents() {
         return new Components()
-                .addSecuritySchemes(ACCESS_TOKEN_SCHEME, accessTokenScheme());
+                .addSecuritySchemes(ACCESS_TOKEN_SCHEME, accessTokenScheme())
+                .addSecuritySchemes(API_KEY_SCHEME, apiKeyScheme());
     }
 
     protected List<SecurityRequirement> buildSecurityRequirements() {
@@ -47,5 +49,19 @@ public abstract class BaseOpenApiConfig {
                 .scheme("bearer")
                 .bearerFormat("JWT")
                 .description("Refresh Token");
+    }
+
+    /**
+     * 내부 API 호출용 ApiKey SecurityScheme
+     * Authorization 헤더에 'ApiKey {각 서비스의 API Key}' 형식으로 입력
+     * 각 서비스가 호출하려는 대상 서비스의 API Key를 사용해야 함
+     * 예) account-service → user-service 호출 시 USER_INTERNAL_API_KEY 값 사용
+     */
+    protected SecurityScheme apiKeyScheme() {
+        return new SecurityScheme()
+                .type(SecurityScheme.Type.APIKEY)
+                .in(SecurityScheme.In.HEADER)
+                .name("Authorization")
+                .description("내부 API 호출용. 형식: 'ApiKey {호출 대상 서비스의 API Key}'");
     }
 }
