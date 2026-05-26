@@ -38,6 +38,16 @@ public class UserService {
         return UserProfileResponse.from(user);
     }
 
+    /**
+     * 내부 API: accountId로 프로필 조회
+     */
+    public UserProfileResponse findProfileByAccountId(String accountId) {
+        User user = userRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new DomainException("USER_NOT_FOUND", "프로필을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        return UserProfileResponse.from(user);
+    }
+
     public UserProfileResponse updateMyProfile(String accountId, String name, String phone) {
         User user = userRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new DomainException("USER_NOT_FOUND", "프로필을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
