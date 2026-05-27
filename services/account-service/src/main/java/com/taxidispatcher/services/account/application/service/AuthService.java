@@ -7,6 +7,8 @@ import com.taxidispatcher.services.account.domain.account.AccountId;
 import com.taxidispatcher.services.account.domain.token.RefreshToken;
 import com.taxidispatcher.services.account.domain.token.RefreshTokenRepository;
 import com.taxidispatcher.services.account.domain.token.TokenId;
+import com.taxidispatcher.services.account.infrastructure.client.UserServiceClient;
+import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
 import com.taxidispatcher.shared.common.exception.DomainException;
 import com.taxidispatcher.shared.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -27,12 +29,40 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccountService accountService;
+    private final UserServiceClient userServiceClient;
 
     @Value("${jwt.expiration.access}")
     private long accessExpiration;
 
     @Value("${jwt.expiration.refresh}")
     private long refreshExpiration;
+
+    /**
+     * 역할 기반 로그인 - 프로필 존재 확인 후 actor 자동 조회
+     */
+    @Transactional
+    public LoginResponse loginAsRole(Account account, String role, String credentialId) {
+        String actor = lookupActorByRole(account.getAccountId().getValue(), role);
+        return login(account, role, actor, credentialId);
+    }
+
+    /**
+     * 역할별 actor(프로필 ID) 조회
+     * USER → user-service에서 userId 조회
+     * DRIVER → driver-service에서 driverId 조회 (TODO)
+     */
+    private String lookupActorByRole(String accountId, String role) {
+        if ("USER".equals(role)) {
+            UserInternalProfile userProfile = userServiceClient.findByAccountId(accountId)
+                    .orElseThrow(() -> new DomainException(
+                            "USER_PROFILE_NOT_FOUND",
+                            "사용자 프로필이 존재하지 않습니다. 프로필 등록 후 시도하세요.",
+                            HttpStatus.NOT_FOUND));
+            return userProfile.getUserId();
+        }
+        // TODO: DRIVER 권한 - driver-service 내부 API 추가 후 구현
+        return null;
+    }
 
     @Transactional
     public LoginResponse login(Account account, String role, String actor, String credentialId) {
@@ -113,7 +143,7 @@ public class AuthService {
     /**
      * 권한 승격 (Refresh Token 기반)
      * Refresh Token은 그대로 유지, DB의 role/actor만 업데이트, 새 Access Token만 발급
-     * TODO: 프로필 존재 확인 로직 추가 (user-service/driver-service 내부 API 호출)
+     * 프로필 존재 확인 및 actor 조회는 lookupActorByRole에서 처리
      * TODO: 잘못된 경로 호출 검증 (예: USER가 driver 승격 시도)
      */
     @Transactional
@@ -138,8 +168,8 @@ public class AuthService {
                 .map(c -> c.getCredentialId().getValue())
                 .findFirst().orElse(null);
 
-        // TODO: newRole에 맞는 프로필 존재 여부 확인 (user-service / driver-service 내부 API)
-        String newActor = null;
+        // newRole에 맞는 프로필 존재 확인 및 actor 조회 (없으면 예외 발생)
+        String newActor = lookupActorByRole(account.getAccountId().getValue(), newRole);
 
         // RefreshToken DB의 role/actor 업데이트 (토큰 자체는 유지)
         refreshToken.updateRole(newRole, newActor);

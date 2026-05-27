@@ -49,6 +49,10 @@ jwt:
 internal:
   api-key: ${ACCOUNT_INTERNAL_API_KEY:TB7gCpALEJwlYAKiG59iNh4KDa2x3O8M}
 
+user-service:
+  url: ${USER_SERVICE_URL:http://localhost:8082}
+  api-key: ${USER_INTERNAL_API_KEY:4YdPjTgGkwlKg2gfl4bipuUNqZbJygHw}
+
 logging:
   level:
     root: INFO
