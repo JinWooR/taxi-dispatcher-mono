@@ -53,6 +53,10 @@ user-service:
   url: ${USER_SERVICE_URL:http://localhost:8082}
   api-key: ${USER_INTERNAL_API_KEY:4YdPjTgGkwlKg2gfl4bipuUNqZbJygHw}
 
+driver-service:
+  url: ${DRIVER_SERVICE_URL:http://localhost:8083}
+  api-key: ${DRIVER_INTERNAL_API_KEY:SOoBsAV26VLZLa9XsMFVdNPavd7GgeGr}
+
 logging:
   level:
     root: INFO

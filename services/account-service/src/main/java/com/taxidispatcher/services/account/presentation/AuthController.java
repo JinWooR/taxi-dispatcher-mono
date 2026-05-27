@@ -56,8 +56,7 @@ public class AuthController implements AuthApi {
     public ResponseEntity<CommonResponse<LoginResponse>> loginDriver(@Valid @RequestBody LoginRequest request) {
         Account account = accountService.loginAccount(request.getLoginId(), request.getPassword());
         String credentialId = extractCredentialId(account, request.getLoginId());
-        // TODO: driver-service 내부 API 추가 후 loginAsRole로 전환 (현재 actor=null)
-        return ResponseEntity.ok(CommonResponse.success(authService.login(account, "DRIVER", null, credentialId), "기사 로그인 성공"));
+        return ResponseEntity.ok(CommonResponse.success(authService.loginAsRole(account, "DRIVER", credentialId), "기사 로그인 성공"));
     }
 
     @Override
