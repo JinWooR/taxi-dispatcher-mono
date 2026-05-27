@@ -7,6 +7,7 @@ import com.taxidispatcher.services.driver.domain.driver.DriverId;
 import com.taxidispatcher.services.driver.domain.driver.DriverRepository;
 import com.taxidispatcher.services.driver.domain.driver.DriverStatus;
 import com.taxidispatcher.services.driver.domain.driver.Vehicle;
+import com.taxidispatcher.shared.common.dto.driver.internal.DriverInternalProfile;
 import com.taxidispatcher.shared.common.exception.DomainException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +52,28 @@ public class DriverService {
     public Driver getDriverByAccountId(String accountId) {
         return driverRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new DomainException("DRIVER_NOT_FOUND", "기사를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+    }
+
+    /**
+     * 내부 API: accountId로 기사 프로필 조회 (서비스 간 통신용)
+     */
+    @Transactional(readOnly = true)
+    public DriverInternalProfile findProfileByAccountId(String accountId) {
+        Driver driver = driverRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new DomainException("DRIVER_NOT_FOUND", "기사를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        return DriverInternalProfile.builder()
+                .driverId(driver.getDriverId().getValue())
+                .accountId(driver.getAccountId())
+                .name(driver.getName())
+                .phoneNumber(driver.getPhoneNumber())
+                .licenseNumber(driver.getLicenseNumber())
+                .plateNumber(driver.getVehicle().getPlateNumber())
+                .vehicleType(driver.getVehicle().getVehicleType())
+                .status(driver.getStatus().name())
+                .createdAt(driver.getCreatedAt())
+                .updatedAt(driver.getUpdatedAt())
+                .build();
     }
 
     @Transactional(readOnly = true)

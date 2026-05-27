@@ -4,18 +4,21 @@ import com.taxidispatcher.services.driver.application.dto.request.ChangeStatusRe
 import com.taxidispatcher.services.driver.application.dto.request.RegisterDriverRequest;
 import com.taxidispatcher.services.driver.application.dto.request.UpdateDriverRequest;
 import com.taxidispatcher.services.driver.application.dto.response.DriverResponse;
+import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Driver API", description = "기사 관련 API")
+@SecurityRequirement(name = BaseOpenApiConfig.ACCESS_TOKEN_SCHEME)
 public interface DriverApi {
 
     @Operation(summary = "기사 등록", description = "새로운 기사를 등록합니다")
