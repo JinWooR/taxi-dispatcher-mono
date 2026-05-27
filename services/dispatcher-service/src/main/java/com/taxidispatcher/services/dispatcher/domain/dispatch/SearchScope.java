@@ -18,6 +18,14 @@ public class SearchScope {
         this.scopeStartedAt = LocalDateTime.now();
     }
 
+    // DB 복원용
+    public static SearchScope reconstitute(int currentScope, LocalDateTime scopeStartedAt) {
+        SearchScope scope = new SearchScope();
+        scope.currentScope = currentScope;
+        scope.scopeStartedAt = scopeStartedAt;
+        return scope;
+    }
+
     public void expandScope() {
         if (currentScope < SCOPE_RADIUS_KM.size()) {
             currentScope++;

@@ -1,9 +1,16 @@
 package com.taxidispatcher.services.dispatcher.domain.dispatch;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.Optional;
 
 public interface DispatchRepository {
-    void save(Dispatch dispatch);
+    Dispatch save(Dispatch dispatch);
+
     Optional<Dispatch> findById(DispatchId dispatchId);
-    void update(Dispatch dispatch);
+
+    Page<Dispatch> findByUserId(UserId userId, Pageable pageable);
+
+    Page<Dispatch> findByStatus(DispatchStatus status, Pageable pageable);
 }

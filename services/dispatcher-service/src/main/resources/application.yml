@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: dispatcher-service
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        jdbc:
+          time_zone: UTC
+        format_sql: true
+        use_sql_comments: true
+    show-sql: false
+
+  jackson:
+    default-timezone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/dispatcher_db}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: ${SPRING_SERVER_PORT:8084}
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    persist-authorization: true
+  api-docs:
+    path: /v3/api-docs
+  override-with-generic-response: false
+
+jwt:
+  publicKey: ${JWT_PUBLIC_KEY:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhuHZH9hvLYEaj2Zj/ezgYH6HiFmW6QvOZR+xiyqTWGy9PgFi9YUEai241I15KCRboX2CcLASiLW4MI+l+gzJ5n4UOjYoqXBgqbWSdQubJVlARdrQrQWMc4c6nqLbqeVl3OtPH3XGES8dOHHJN0TruaJirKDMwfGOu4n+uk/QMsowq0+H9SbH4E60GChhkPQRV+G+Fy5zJAW2AZQcpZaS5WppqUJhMtjA1UvJ0KCXeclW3Kj4LPOPdvbyXEH0h/iXXZVD0HazsbBY+bkEMVolORElZE5Qet23UThppTMrkGIqbwULMDDpLyrbCb9BMl1UBW70Xz3DQJ8Tba0211VpmwIDAQAB}
+
+internal:
+  api-key: ${DISPATCHER_INTERNAL_API_KEY:Tt3wsEWYdGEhbjfOGFNEqbrU3uibFe6b}
+
+logging:
+  level:
+    root: INFO
+    com.taxidispatcher: DEBUG
+    org.springframework.security: DEBUG
