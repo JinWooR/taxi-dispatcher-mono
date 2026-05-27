@@ -5,6 +5,7 @@ import com.taxidispatcher.services.user.domain.user.User;
 import com.taxidispatcher.services.user.domain.user.UserId;
 import com.taxidispatcher.services.user.domain.user.UserRepository;
 import com.taxidispatcher.shared.common.exception.DomainException;
+import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +40,21 @@ public class UserService {
     }
 
     /**
-     * 내부 API: accountId로 프로필 조회
+     * 내부 API: accountId로 프로필 조회 (서비스 간 통신용)
      */
-    public UserProfileResponse findProfileByAccountId(String accountId) {
+    public UserInternalProfile findProfileByAccountId(String accountId) {
         User user = userRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new DomainException("USER_NOT_FOUND", "프로필을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        return UserProfileResponse.from(user);
+        return UserInternalProfile.builder()
+                .userId(user.getUserId().getValue())
+                .accountId(user.getAccountId())
+                .name(user.getName())
+                .phone(user.getPhone())
+                .status(user.getStatus().name())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .build();
     }
 
     public UserProfileResponse updateMyProfile(String accountId, String name, String phone) {

@@ -1,7 +1,7 @@
 package com.taxidispatcher.services.user.presentation.internal;
 
-import com.taxidispatcher.services.user.application.dto.response.UserProfileResponse;
 import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
+import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,5 +27,5 @@ public interface InternalUserApi {
             @ApiResponse(responseCode = "404", description = "프로필 없음"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseEntity<CommonResponse<UserProfileResponse>> findByAccountId(@PathVariable String accountId);
+    ResponseEntity<CommonResponse<UserInternalProfile>> findByAccountId(@PathVariable String accountId);
 }
