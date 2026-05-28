@@ -20,9 +20,9 @@ spring:
       write-dates-as-timestamps: false
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/user_db}
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:password}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 server:
@@ -40,10 +40,10 @@ springdoc:
   override-with-generic-response: false
 
 jwt:
-  publicKey: ${JWT_PUBLIC_KEY:MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhuHZH9hvLYEaj2Zj/ezgYH6HiFmW6QvOZR+xiyqTWGy9PgFi9YUEai241I15KCRboX2CcLASiLW4MI+l+gzJ5n4UOjYoqXBgqbWSdQubJVlARdrQrQWMc4c6nqLbqeVl3OtPH3XGES8dOHHJN0TruaJirKDMwfGOu4n+uk/QMsowq0+H9SbH4E60GChhkPQRV+G+Fy5zJAW2AZQcpZaS5WppqUJhMtjA1UvJ0KCXeclW3Kj4LPOPdvbyXEH0h/iXXZVD0HazsbBY+bkEMVolORElZE5Qet23UThppTMrkGIqbwULMDDpLyrbCb9BMl1UBW70Xz3DQJ8Tba0211VpmwIDAQAB}
+  publicKey: ${JWT_PUBLIC_KEY}
 
 internal:
-  api-key: ${USER_INTERNAL_API_KEY:4YdPjTgGkwlKg2gfl4bipuUNqZbJygHw}
+  api-key: ${USER_INTERNAL_API_KEY}
 
 logging:
   level:

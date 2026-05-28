@@ -6,8 +6,9 @@ services:
     image: mysql:8.0
     container_name: taxi-dispatcher-mysql
     platform: linux/amd64
+    env_file:
+      - envs/common.env
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-password}
       MYSQL_ROOT_HOST: '%'
       TZ: 'Asia/Seoul'
     ports:
@@ -24,7 +25,8 @@ services:
     networks:
       - taxi-network
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-password}" ]
+      # 컨테이너 내부 환경변수 참조 ($$는 docker-compose escape)
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD" ]
       timeout: 20s
       retries: 10
       interval: 10s
@@ -40,16 +42,20 @@ services:
       dockerfile: services/account-service/Dockerfile
     container_name: account-service
     ports:
-      - "18081:8080"
+      - "8081:8080"
+    env_file:
+      - envs/common.env
+      - envs/account.env
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/account_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: 'false'
+      # Service URLs (Docker Compose 네트워크 내부 통신)
+      USER_SERVICE_URL: http://user-service:8080
+      DRIVER_SERVICE_URL: http://driver-service:8080
     depends_on:
       mysql:
         condition: service_healthy
@@ -64,13 +70,14 @@ services:
       dockerfile: services/driver-service/Dockerfile
     container_name: driver-service
     ports:
-      - "18083:8080"
+      - "8083:8080"
+    env_file:
+      - envs/common.env
+      - envs/driver.env
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/driver_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: 'false'
@@ -88,13 +95,14 @@ services:
       dockerfile: services/user-service/Dockerfile
     container_name: user-service
     ports:
-      - "18082:8080"
+      - "8082:8080"
+    env_file:
+      - envs/common.env
+      - envs/user.env
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/user_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: 'false'
@@ -112,13 +120,14 @@ services:
       dockerfile: services/dispatcher-service/Dockerfile
     container_name: dispatcher-service
     ports:
-      - "18084:8080"
+      - "8084:8080"
+    env_file:
+      - envs/common.env
+      - envs/dispatcher.env
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_SERVER_PORT: 8080
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/dispatcher_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-password}
       SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_JPA_SHOW_SQL: 'false'
