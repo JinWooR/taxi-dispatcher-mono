@@ -45,6 +45,13 @@ jwt:
 internal:
   api-key: ${DISPATCHER_INTERNAL_API_KEY}
 
+kakao:
+  rest-api: ${KAKAO_REST_API_KEY}
+
+naver:
+  client-id: ${NAVER_CLIENT_ID}
+  client-secret: ${NAVER_CLIENT_SECRET}
+
 logging:
   level:
     root: INFO
