@@ -62,18 +62,7 @@ public class DriverService {
         Driver driver = driverRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new DomainException("DRIVER_NOT_FOUND", "기사를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        return DriverInternalProfile.builder()
-                .driverId(driver.getDriverId().getValue())
-                .accountId(driver.getAccountId())
-                .name(driver.getName())
-                .phoneNumber(driver.getPhoneNumber())
-                .licenseNumber(driver.getLicenseNumber())
-                .plateNumber(driver.getVehicle().getPlateNumber())
-                .vehicleType(driver.getVehicle().getVehicleType())
-                .status(driver.getStatus().name())
-                .createdAt(driver.getCreatedAt())
-                .updatedAt(driver.getUpdatedAt())
-                .build();
+        return toInternalProfile(driver);
     }
 
     @Transactional(readOnly = true)
@@ -108,13 +97,56 @@ public class DriverService {
         log.info("기사 상태 변경: accountId={}, status={}", accountId, newStatus);
     }
 
-    @Transactional(readOnly = true)
-    public List<Driver> getAvailableDrivers() {
-        return driverRepository.findByStatus(DriverStatus.ONLINE);
+    public void updateLocation(String accountId, double latitude, double longitude) {
+        Driver driver = getDriverByAccountId(accountId);
+        driver.updateLocation(latitude, longitude);
+        driverRepository.save(driver);
     }
 
+    /**
+     * 내부 API: 특정 좌표 기준 반경 내 ONLINE 기사 조회
+     * Bounding Box를 계산하여 후보군 사전 축소
+     */
     @Transactional(readOnly = true)
-    public List<Driver> getDriversByStatus(DriverStatus status) {
-        return driverRepository.findByStatus(status);
+    public List<DriverInternalProfile> findNearbyDrivers(
+            double latitude, double longitude, double radiusKm,
+            List<String> excludeDriverIds) {
+
+        // Bounding Box 좌표 계산
+        // 위도 1도 ≈ 111km, 경도 1도 ≈ 111km * cos(위도)
+        double latDelta = radiusKm / 111.0;
+        double lngDelta = radiusKm / (111.0 * Math.cos(Math.toRadians(latitude)));
+
+        double minLatitude = latitude - latDelta;
+        double maxLatitude = latitude + latDelta;
+        double minLongitude = longitude - lngDelta;
+        double maxLongitude = longitude + lngDelta;
+
+        return driverRepository.findOnlineDriversWithinRadius(
+                        latitude, longitude, radiusKm,
+                        minLatitude, maxLatitude,
+                        minLongitude, maxLongitude,
+                        excludeDriverIds)
+                .stream()
+                .map(this::toInternalProfile)
+                .toList();
+    }
+
+    private DriverInternalProfile toInternalProfile(Driver driver) {
+        return DriverInternalProfile.builder()
+                .driverId(driver.getDriverId().getValue())
+                .accountId(driver.getAccountId())
+                .name(driver.getName())
+                .phoneNumber(driver.getPhoneNumber())
+                .licenseNumber(driver.getLicenseNumber())
+                .plateNumber(driver.getVehicle().getPlateNumber())
+                .vehicleType(driver.getVehicle().getVehicleType())
+                .status(driver.getStatus().name())
+                .latitude(driver.getLocation() != null ? driver.getLocation().getLatitude() : null)
+                .longitude(driver.getLocation() != null ? driver.getLocation().getLongitude() : null)
+                .locationUpdatedAt(driver.getLocation() != null ? driver.getLocation().getUpdatedAt() : null)
+                .createdAt(driver.getCreatedAt())
+                .updatedAt(driver.getUpdatedAt())
+                .build();
     }
 }

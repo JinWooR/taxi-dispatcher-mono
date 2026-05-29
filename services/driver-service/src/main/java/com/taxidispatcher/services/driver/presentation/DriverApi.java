@@ -3,6 +3,7 @@ package com.taxidispatcher.services.driver.presentation;
 import com.taxidispatcher.services.driver.application.dto.request.ChangeStatusRequest;
 import com.taxidispatcher.services.driver.application.dto.request.RegisterDriverRequest;
 import com.taxidispatcher.services.driver.application.dto.request.UpdateDriverRequest;
+import com.taxidispatcher.services.driver.application.dto.request.UpdateLocationRequest;
 import com.taxidispatcher.services.driver.application.dto.response.DriverResponse;
 import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
 import com.taxidispatcher.shared.common.response.CommonResponse;
@@ -56,4 +57,13 @@ public interface DriverApi {
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
     ResponseEntity<CommonResponse<Void>> changeStatus(@Valid @RequestBody ChangeStatusRequest request);
+
+    @Operation(summary = "현재 위치 최신화", description = "기사의 현재 위치(위도/경도)를 최신화합니다")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "최신화 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청 (유효 범위 벗어남)"),
+            @ApiResponse(responseCode = "404", description = "기사를 찾을 수 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    ResponseEntity<CommonResponse<Void>> updateLocation(@Valid @RequestBody UpdateLocationRequest request);
 }

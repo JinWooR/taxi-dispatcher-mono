@@ -7,7 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/internal/drivers")
@@ -24,5 +27,17 @@ public class InternalDriverController implements InternalDriverApi {
     public ResponseEntity<CommonResponse<DriverInternalProfile>> findByAccountId(@PathVariable String accountId) {
         DriverInternalProfile profile = driverService.findProfileByAccountId(accountId);
         return ResponseEntity.ok(CommonResponse.success(profile));
+    }
+
+    @Override
+    @GetMapping("/nearby")
+    public ResponseEntity<CommonResponse<List<DriverInternalProfile>>> findNearbyDrivers(
+            @RequestParam double latitude,
+            @RequestParam double longitude,
+            @RequestParam double radiusKm,
+            @RequestParam(required = false) List<String> excludeDriverIds) {
+        List<DriverInternalProfile> drivers =
+                driverService.findNearbyDrivers(latitude, longitude, radiusKm, excludeDriverIds);
+        return ResponseEntity.ok(CommonResponse.success(drivers));
     }
 }

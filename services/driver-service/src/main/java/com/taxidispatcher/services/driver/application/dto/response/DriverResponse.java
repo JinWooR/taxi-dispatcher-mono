@@ -22,6 +22,9 @@ public class DriverResponse {
     private String plateNumber;
     private String vehicleType;
     private DriverStatus status;
+    private Double latitude;
+    private Double longitude;
+    private LocalDateTime locationUpdatedAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -35,6 +38,9 @@ public class DriverResponse {
                 .plateNumber(driver.getVehicle().getPlateNumber())
                 .vehicleType(driver.getVehicle().getVehicleType())
                 .status(driver.getStatus())
+                .latitude(driver.getLocation() != null ? driver.getLocation().getLatitude() : null)
+                .longitude(driver.getLocation() != null ? driver.getLocation().getLongitude() : null)
+                .locationUpdatedAt(driver.getLocation() != null ? driver.getLocation().getUpdatedAt() : null)
                 .createdAt(driver.getCreatedAt())
                 .updatedAt(driver.getUpdatedAt())
                 .build();

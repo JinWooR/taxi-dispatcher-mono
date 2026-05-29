@@ -3,6 +3,7 @@ package com.taxidispatcher.services.driver.presentation;
 import com.taxidispatcher.services.driver.application.dto.request.ChangeStatusRequest;
 import com.taxidispatcher.services.driver.application.dto.request.RegisterDriverRequest;
 import com.taxidispatcher.services.driver.application.dto.request.UpdateDriverRequest;
+import com.taxidispatcher.services.driver.application.dto.request.UpdateLocationRequest;
 import com.taxidispatcher.services.driver.application.dto.response.DriverResponse;
 import com.taxidispatcher.services.driver.application.service.DriverService;
 import com.taxidispatcher.services.driver.domain.driver.Driver;
@@ -70,14 +71,13 @@ public class DriverController implements DriverApi {
         return ResponseEntity.ok(CommonResponse.success(null, "상태 변경 완료"));
     }
 
-    @GetMapping("/available")
-    @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<CommonResponse<Object>> getAvailableDrivers() {
-        var drivers = driverService.getAvailableDrivers()
-                .stream()
-                .map(DriverResponse::from)
-                .toList();
-        return ResponseEntity.ok(CommonResponse.success(drivers, "온라인 기사 조회 성공"));
+    @Override
+    @PatchMapping("/me/location")
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<CommonResponse<Void>> updateLocation(@Valid @RequestBody UpdateLocationRequest request) {
+        String accountId = getAccountIdFromContext();
+        driverService.updateLocation(accountId, request.getLatitude(), request.getLongitude());
+        return ResponseEntity.ok(CommonResponse.success(null, "위치 최신화 완료"));
     }
 
     private String getAccountIdFromContext() {
