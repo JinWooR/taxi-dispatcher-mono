@@ -167,6 +167,29 @@ services:
           cpus: '0.5'
           memory: 512M
 
+  # Swagger UI Aggregator (모든 서비스 API 문서 통합)
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    ports:
+      - "8090:8080"
+    environment:
+      URLS: >
+        [
+          {"url": "http://localhost:8081/v3/api-docs", "name": "Account Service"},
+          {"url": "http://localhost:8082/v3/api-docs", "name": "User Service"},
+          {"url": "http://localhost:8083/v3/api-docs", "name": "Driver Service"},
+          {"url": "http://localhost:8084/v3/api-docs", "name": "Dispatcher Service"}
+        ]
+    networks:
+      - taxi-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
 volumes:
   mysql_data:
     driver: local

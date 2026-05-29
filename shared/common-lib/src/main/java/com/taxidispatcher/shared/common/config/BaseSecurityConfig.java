@@ -6,6 +6,7 @@ import com.taxidispatcher.shared.common.jwt.JwtAuthenticationFilter;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,8 +14,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,6 +28,9 @@ public abstract class BaseSecurityConfig {
     protected final ObjectMapper objectMapper;
     protected final JwtAuthenticationFilter jwtAuthenticationFilter;
     protected final InternalApiKeyFilter internalApiKeyFilter;
+
+    @Value("${CORS_ALLOWED_ORIGINS:http://localhost:8090}")
+    private String corsAllowedOrigins;
 
     // 모든 서비스가 공통으로 허용하는 경로
     private static final String[] COMMON_PUBLIC_PATHS = {
@@ -63,6 +71,7 @@ public abstract class BaseSecurityConfig {
         String[] allPublicPaths = combinePublicPaths();
 
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(allPublicPaths).permitAll()
                 .anyRequest().authenticated()
@@ -77,6 +86,23 @@ public abstract class BaseSecurityConfig {
             );
 
         return http.build();
+    }
+
+    /**
+     * CORS 설정
+     * 환경변수 CORS_ALLOWED_ORIGINS로 허용 origin 제어 (콤마로 구분)
+     * 현재 /v3/api-docs/** 경로에만 적용 (통합 Swagger UI 지원)
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList(corsAllowedOrigins.split(",")));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);  // 전체 경로
+        return source;
     }
 
     // 서비스별 추가로 필요한 공개 경로 (기본값: 없음)

@@ -108,7 +108,12 @@ docker-compose down
 
 ## 🌐 API 문서 (Swagger)
 
-각 서비스별 API 문서:
+### 통합 Swagger UI (권장)
+http://localhost:8090
+- 한 곳에서 모든 서비스 API 확인
+- 상단 dropdown으로 서비스 전환
+
+### 개별 서비스 Swagger UI
 - http://localhost:8081/swagger-ui.html (Account)
 - http://localhost:8082/swagger-ui.html (User)
 - http://localhost:8083/swagger-ui.html (Driver)
