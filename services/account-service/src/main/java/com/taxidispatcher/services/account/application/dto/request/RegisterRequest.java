@@ -23,6 +23,6 @@ public class RegisterRequest {
     private String loginId;
 
     @NotBlank(message = "비밀번호는 필수입니다")
-    @Size(min = 8, max = 50, message = "비밀번호는 8~50자여야 합니다")
+    @Size(min = 6, max = 30, message = "비밀번호는 6~30자여야 합니다")
     private String password;
 }
