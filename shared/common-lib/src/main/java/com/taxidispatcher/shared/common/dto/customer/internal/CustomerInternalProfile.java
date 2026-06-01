@@ -1,4 +1,4 @@
-package com.taxidispatcher.shared.common.dto.user.internal;
+package com.taxidispatcher.shared.common.dto.customer.internal;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 사용자 프로필 내부 통신 DTO
- * user-service의 내부 API 응답에 사용
+ * 고객 프로필 내부 통신 DTO
+ * customer-service의 내부 API 응답에 사용
  * 서비스 간 통신용으로 공유
  */
 @Data
@@ -19,9 +19,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserInternalProfile {
+public class CustomerInternalProfile {
 
-    private String userId;
+    private String customerId;
     private String accountId;
     private String name;
     private String phone;

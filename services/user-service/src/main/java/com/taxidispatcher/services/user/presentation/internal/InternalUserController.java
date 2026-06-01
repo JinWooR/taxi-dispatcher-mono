@@ -1,7 +1,7 @@
 package com.taxidispatcher.services.user.presentation.internal;
 
 import com.taxidispatcher.services.user.application.service.UserService;
-import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
+import com.taxidispatcher.shared.common.dto.customer.internal.CustomerInternalProfile;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +21,8 @@ public class InternalUserController implements InternalUserApi {
 
     @Override
     @GetMapping("/by-account/{accountId}")
-    public ResponseEntity<CommonResponse<UserInternalProfile>> findByAccountId(@PathVariable String accountId) {
-        UserInternalProfile profile = userService.findProfileByAccountId(accountId);
+    public ResponseEntity<CommonResponse<CustomerInternalProfile>> findByAccountId(@PathVariable String accountId) {
+        CustomerInternalProfile profile = userService.findProfileByAccountId(accountId);
         return ResponseEntity.ok(CommonResponse.success(profile));
     }
 }

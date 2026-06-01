@@ -5,7 +5,7 @@ import com.taxidispatcher.services.user.domain.user.User;
 import com.taxidispatcher.services.user.domain.user.UserId;
 import com.taxidispatcher.services.user.domain.user.UserRepository;
 import com.taxidispatcher.shared.common.exception.DomainException;
-import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
+import com.taxidispatcher.shared.common.dto.customer.internal.CustomerInternalProfile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -42,12 +42,12 @@ public class UserService {
     /**
      * 내부 API: accountId로 프로필 조회 (서비스 간 통신용)
      */
-    public UserInternalProfile findProfileByAccountId(String accountId) {
+    public CustomerInternalProfile findProfileByAccountId(String accountId) {
         User user = userRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new DomainException("USER_NOT_FOUND", "프로필을 찾을 수 없습니다", HttpStatus.NOT_FOUND));
 
-        return UserInternalProfile.builder()
-                .userId(user.getUserId().getValue())
+        return CustomerInternalProfile.builder()
+                .customerId(user.getUserId().getValue())
                 .accountId(user.getAccountId())
                 .name(user.getName())
                 .phone(user.getPhone())
