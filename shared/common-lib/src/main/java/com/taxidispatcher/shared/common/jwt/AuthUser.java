@@ -26,12 +26,12 @@ public class AuthUser {
     private String type;
 
     /**
-     * 권한 (USER | DRIVER | NONE)
+     * 권한 (CUSTOMER | DRIVER | NONE)
      */
     private String role;
 
     /**
-     * 도메인별 고유 ID (userId or driverId)
+     * 도메인별 고유 ID (customerId or driverId)
      */
     private String actor;
 
@@ -41,10 +41,10 @@ public class AuthUser {
     private String credentialId;
 
     /**
-     * 권한이 USER인지 확인
+     * 권한이 CUSTOMER인지 확인
      */
-    public boolean isUser() {
-        return "USER".equals(this.role);
+    public boolean isCustomer() {
+        return "CUSTOMER".equals(this.role);
     }
 
     /**

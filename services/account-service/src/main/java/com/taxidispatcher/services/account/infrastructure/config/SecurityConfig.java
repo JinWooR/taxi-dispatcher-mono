@@ -30,11 +30,11 @@ public class SecurityConfig extends BaseSecurityConfig {
         return new String[]{
             "/auth/register",
             "/auth/login",
-            "/auth/login/user",
+            "/auth/login/customer",
             "/auth/login/driver",
             "/auth/refresh",
             "/auth/logout",
-            "/auth/upgrade/user",
+            "/auth/upgrade/customer",
             "/auth/upgrade/driver"
         };
     }

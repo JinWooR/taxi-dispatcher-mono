@@ -49,9 +49,9 @@ jwt:
 internal:
   api-key: ${ACCOUNT_INTERNAL_API_KEY}
 
-user-service:
-  url: ${USER_SERVICE_URL}
-  api-key: ${USER_INTERNAL_API_KEY}
+customer-service:
+  url: ${CUSTOMER_SERVICE_URL}
+  api-key: ${CUSTOMER_INTERNAL_API_KEY}
 
 driver-service:
   url: ${DRIVER_SERVICE_URL}

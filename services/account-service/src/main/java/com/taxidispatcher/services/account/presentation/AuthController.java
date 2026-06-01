@@ -44,11 +44,11 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    @PostMapping("/login/user")
-    public ResponseEntity<CommonResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest request) {
+    @PostMapping("/login/customer")
+    public ResponseEntity<CommonResponse<LoginResponse>> loginCustomer(@Valid @RequestBody LoginRequest request) {
         Account account = accountService.loginAccount(request.getLoginId(), request.getPassword());
         String credentialId = extractCredentialId(account, request.getLoginId());
-        return ResponseEntity.ok(CommonResponse.success(authService.loginAsRole(account, "USER", credentialId), "사용자 로그인 성공"));
+        return ResponseEntity.ok(CommonResponse.success(authService.loginAsRole(account, "CUSTOMER", credentialId), "고객 로그인 성공"));
     }
 
     @Override
@@ -74,10 +74,10 @@ public class AuthController implements AuthApi {
     }
 
     @Override
-    @PostMapping("/upgrade/user")
-    public ResponseEntity<CommonResponse<LoginResponse>> upgradeUser(@RequestHeader("Authorization") String bearerToken) {
-        LoginResponse response = authService.upgradeRole(extractBearer(bearerToken), "USER");
-        return ResponseEntity.ok(CommonResponse.success(response, "사용자 권한 승격 성공"));
+    @PostMapping("/upgrade/customer")
+    public ResponseEntity<CommonResponse<LoginResponse>> upgradeCustomer(@RequestHeader("Authorization") String bearerToken) {
+        LoginResponse response = authService.upgradeRole(extractBearer(bearerToken), "CUSTOMER");
+        return ResponseEntity.ok(CommonResponse.success(response, "고객 권한 승격 성공"));
     }
 
     @Override
