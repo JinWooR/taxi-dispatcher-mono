@@ -27,7 +27,7 @@ public class CustomerController implements CustomerApi {
 
     @Override
     @PostMapping
-    @PreAuthorize("hasAnyRole('NONE', 'USER')")
+    @PreAuthorize("hasAnyRole('NONE', 'CUSTOMER')")
     public ResponseEntity<CommonResponse<CustomerProfileResponse>> registerProfile(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody RegisterCustomerRequest request) {
@@ -44,7 +44,7 @@ public class CustomerController implements CustomerApi {
 
     @Override
     @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<CustomerProfileResponse>> getMyProfile(
             @AuthenticationPrincipal AuthUser authUser) {
 
@@ -55,7 +55,7 @@ public class CustomerController implements CustomerApi {
 
     @Override
     @PutMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<CustomerProfileResponse>> updateMyProfile(
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody UpdateCustomerRequest request) {
@@ -71,7 +71,7 @@ public class CustomerController implements CustomerApi {
 
     @Override
     @DeleteMapping("/me")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<Void> deleteMyProfile(
             @AuthenticationPrincipal AuthUser authUser) {
 
