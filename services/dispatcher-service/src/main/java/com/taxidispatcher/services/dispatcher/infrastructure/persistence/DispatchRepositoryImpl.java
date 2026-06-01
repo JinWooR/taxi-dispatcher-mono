@@ -28,8 +28,8 @@ public class DispatchRepositoryImpl implements DispatchRepository {
     }
 
     @Override
-    public Page<Dispatch> findByUserId(UserId userId, Pageable pageable) {
-        return jpaRepository.findByUserId(userId.getValue(), pageable)
+    public Page<Dispatch> findByCustomerId(CustomerId customerId, Pageable pageable) {
+        return jpaRepository.findByCustomerId(customerId.getValue(), pageable)
             .map(DispatchJpaEntity::toModel);
     }
 

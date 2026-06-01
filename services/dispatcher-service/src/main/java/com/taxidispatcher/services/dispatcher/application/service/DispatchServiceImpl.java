@@ -18,7 +18,7 @@ public class DispatchServiceImpl implements DispatchService {
     private final DispatchRepository dispatchRepository;
 
     @Override
-    public DispatchResponse createDispatch(String userId, CreateDispatchRequest request) {
+    public DispatchResponse createDispatch(String customerId, CreateDispatchRequest request) {
         Location departure = new Location(
             request.getDepartureLatitude(),
             request.getDepartureLongitude(),
@@ -30,7 +30,7 @@ public class DispatchServiceImpl implements DispatchService {
             request.getArrivalAddress()
         );
 
-        Dispatch dispatch = Dispatch.create(new UserId(userId), departure, arrival);
+        Dispatch dispatch = Dispatch.create(new CustomerId(customerId), departure, arrival);
         Dispatch saved = dispatchRepository.save(dispatch);
 
         return DispatchResponse.from(saved);
@@ -38,8 +38,8 @@ public class DispatchServiceImpl implements DispatchService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<DispatchResponse> getDispatchesByUser(String userId, Pageable pageable) {
-        return dispatchRepository.findByUserId(new UserId(userId), pageable)
+    public Page<DispatchResponse> getDispatchesByCustomer(String customerId, Pageable pageable) {
+        return dispatchRepository.findByCustomerId(new CustomerId(customerId), pageable)
             .map(DispatchResponse::from);
     }
 

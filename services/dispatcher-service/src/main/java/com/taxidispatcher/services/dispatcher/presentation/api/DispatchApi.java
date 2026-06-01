@@ -29,9 +29,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 @SecurityRequirement(name = BaseOpenApiConfig.ACCESS_TOKEN_SCHEME)
 public interface DispatchApi {
 
-    // ===== User Endpoints =====
+    // ===== Customer Endpoints =====
 
-    @Operation(summary = "배차 요청 생성", description = "사용자가 새로운 배차 요청 생성")
+    @Operation(summary = "배차 요청 생성", description = "고객가 새로운 배차 요청 생성")
     @ApiResponse(responseCode = "201", description = "배차 요청 생성 성공")
     @ApiResponse(responseCode = "400", description = "입력값 검증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
@@ -40,7 +40,7 @@ public interface DispatchApi {
             @AuthenticationPrincipal AuthUser authUser,
             @Valid @RequestBody CreateDispatchRequest request);
 
-    @Operation(summary = "내 배차 목록 조회", description = "로그인한 사용자의 배차 목록 조회 (페이징)")
+    @Operation(summary = "내 배차 목록 조회", description = "로그인한 고객의 배차 목록 조회 (페이징)")
     @ApiResponse(responseCode = "200", description = "배차 목록 조회 성공")
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))

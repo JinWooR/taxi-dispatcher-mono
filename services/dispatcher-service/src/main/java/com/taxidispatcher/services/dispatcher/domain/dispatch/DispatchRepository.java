@@ -10,7 +10,7 @@ public interface DispatchRepository {
 
     Optional<Dispatch> findById(DispatchId dispatchId);
 
-    Page<Dispatch> findByUserId(UserId userId, Pageable pageable);
+    Page<Dispatch> findByCustomerId(CustomerId customerId, Pageable pageable);
 
     Page<Dispatch> findByStatus(DispatchStatus status, Pageable pageable);
 }
