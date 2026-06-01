@@ -16,7 +16,7 @@ main (항상 배포 가능한 상태)
 feature/<service>/<feature-name>
   ├─ feature/account/login
   ├─ feature/account/password-reset
-  ├─ feature/user/profile-update
+  ├─ feature/customer/profile-update
   ├─ feature/driver/registration
   └─ feature/dispatcher/matching
 ```
@@ -65,7 +65,7 @@ feature/<service>/<feature-name>
 
 ```
 account    - Account Service
-user       - User Service
+customer   - Customer Service
 driver     - Driver Service
 dispatcher - Dispatcher Service
 common     - Common Library

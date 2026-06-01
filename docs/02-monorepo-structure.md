@@ -25,7 +25,7 @@ taxi-dispatcher-mono/
 │   └── 06-database-schema.md
 ├── services/                     # 마이크로서비스
 │   ├── account-service/
-│   ├── user-service/
+│   ├── customer-service/
 │   ├── driver-service/
 │   └── dispatcher-service/
 ├── shared/                       # 공유 라이브러리
@@ -45,7 +45,7 @@ taxi-dispatcher-mono/
 | 서비스 | 역할 |
 |--------|------|
 | **account-service** | 계정 관리 (회원가입, 로그인, 비밀번호 등) |
-| **user-service** | 사용자 정보 및 프로필 관리 |
+| **customer-service** | 사용자 정보 및 프로필 관리 |
 | **driver-service** | 택시 기사 정보 및 상태 관리 |
 | **dispatcher-service** | 배차 요청 및 배치 관리 |
 
@@ -64,7 +64,7 @@ taxi-dispatcher-mono/
 
 ```sql
 CREATE SCHEMA account_db;      -- Account Service
-CREATE SCHEMA user_db;         -- User Service
+CREATE SCHEMA customer_db;     -- Customer Service
 CREATE SCHEMA driver_db;       -- Driver Service
 CREATE SCHEMA dispatcher_db;   -- Dispatcher Service
 ```
@@ -76,7 +76,7 @@ CREATE SCHEMA dispatcher_db;   -- Dispatcher Service
 | 서비스 | 의존 대상 |
 |--------|----------|
 | account-service | common-lib, domain-models |
-| user-service | common-lib, domain-models |
+| customer-service | common-lib, domain-models |
 | driver-service | common-lib, domain-models |
 | dispatcher-service | common-lib, domain-models |
 | common-lib | (없음) |
