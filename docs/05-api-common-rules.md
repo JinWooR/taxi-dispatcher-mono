@@ -159,10 +159,10 @@ GET /api/dispatches?page=0&size=20&sort=createdAt,desc
 - `ACCOUNT_INVALID_PASSWORD` - 비밀번호가 올바르지 않음
 - `ACCOUNT_INACTIVE` - 비활성화된 계정
 
-**User Service**
-- `USER_NOT_FOUND` - 사용자를 찾을 수 없음
-- `USER_PROFILE_INCOMPLETE` - 프로필이 불완전함
-- `USER_INVALID_PHONE` - 유효하지 않은 전화번호
+**Customer Service**
+- `CUSTOMER_NOT_FOUND` - 사용자를 찾을 수 없음
+- `CUSTOMER_PROFILE_INCOMPLETE` - 프로필이 불완전함
+- `CUSTOMER_INVALID_PHONE` - 유효하지 않은 전화번호
 
 **Driver Service**
 - `DRIVER_NOT_FOUND` - 기사를 찾을 수 없음
@@ -339,7 +339,7 @@ public class AccountController implements AccountApi {
 
 **현재 (Phase 1): 서비스별 개별 접근**
 - Account Service: http://localhost:8081/swagger-ui.html
-- User Service: http://localhost:8082/swagger-ui.html
+- Customer Service: http://localhost:8082/swagger-ui.html
 - Driver Service: http://localhost:8083/swagger-ui.html
 - Dispatcher Service: http://localhost:8084/swagger-ui.html
 
@@ -501,7 +501,7 @@ public class CorsConfig implements WebMvcConfigurer {
 
 ```
 GET /api/accounts
-GET /api/users
+GET /api/customers
 GET /api/drivers
 ```
 

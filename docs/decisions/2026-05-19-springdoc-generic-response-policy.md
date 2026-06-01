@@ -23,7 +23,7 @@ springdoc:
 
 ### 2. 적용 대상
 - ✅ account-service (이미 적용)
-- ✅ user-service (향후)
+- ✅ customer-service (향후)
 - ✅ driver-service (향후)
 - ✅ dispatcher-service (향후)
 

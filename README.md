@@ -36,7 +36,7 @@ cp envs/common.env.example envs/common.env
 cp envs/account.env.example envs/account.env
 ```
 
-> 나머지 서비스(user, driver, dispatcher)도 동일한 방식으로 복사.
+> 나머지 서비스(customer, driver, dispatcher)도 동일한 방식으로 복사.
 
 ### 2. 환경 변수 구조
 
@@ -44,7 +44,7 @@ cp envs/account.env.example envs/account.env
 |------|------|
 | `envs/common.env` | 모든 서비스 공유 (DB, JWT 공개키, Internal API Key) |
 | `envs/account.env` | account-service 전용 (JWT 비밀키, 다른 서비스 호출 URL) |
-| `envs/user.env`, `driver.env`, `dispatcher.env` | 각 서비스 DB URL |
+| `envs/customer.env`, `driver.env`, `dispatcher.env` | 각 서비스 DB URL |
 
 > env 파일 값은 **로컬 실행 기준**입니다. 도커 환경에서는 `docker-compose.yml`의 `environment`가 일부 값(컨테이너명 기반 URL 등)을 덮어씁니다.
 
@@ -95,7 +95,7 @@ docker-compose up -d
 
 서비스 시작:
 - Account Service: http://localhost:8081
-- User Service: http://localhost:8082
+- Customer Service: http://localhost:8082
 - Driver Service: http://localhost:8083
 - Dispatcher Service: http://localhost:8084
 
@@ -115,7 +115,7 @@ http://localhost:8090
 
 ### 개별 서비스 Swagger UI
 - http://localhost:8081/swagger-ui.html (Account)
-- http://localhost:8082/swagger-ui.html (User)
+- http://localhost:8082/swagger-ui.html (Customer)
 - http://localhost:8083/swagger-ui.html (Driver)
 - http://localhost:8084/swagger-ui.html (Dispatcher)
 

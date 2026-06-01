@@ -179,8 +179,8 @@ networks:
 infra/mysql/
 ├── init-account-schema.sql    # Account DB 스키마
 ├── init-account-data.sql      # Account 테스트 데이터
-├── init-user-schema.sql       # (향후) User DB
-├── init-user-data.sql         # (향후) User 테스트 데이터
+├── init-customer-schema.sql   # (향후) Customer DB
+├── init-customer-data.sql     # (향후) Customer 테스트 데이터
 └── ...
 ```
 
@@ -365,7 +365,7 @@ docker inspect account-service
 
 | 서비스 | Port | Swagger |
 |--------|------|---------|
-| User Service | 8082 | http://localhost:8082/swagger-ui.html |
+| Customer Service | 8082 | http://localhost:8082/swagger-ui.html |
 | Driver Service | 8083 | http://localhost:8083/swagger-ui.html |
 | Dispatcher Service | 8084 | http://localhost:8084/swagger-ui.html |
 
@@ -527,7 +527,7 @@ EOF
 ```
 MySQL 8.0
 ├── account_db
-├── user_db (향후)
+├── customer_db (향후)
 ├── driver_db (향후)
 └── dispatcher_db (향후)
 ```
