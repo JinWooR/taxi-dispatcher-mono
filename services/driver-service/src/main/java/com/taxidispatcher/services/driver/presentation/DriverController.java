@@ -71,7 +71,7 @@ public class DriverController implements DriverApi {
     }
 
     @GetMapping("/available")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<Object>> getAvailableDrivers() {
         var drivers = driverService.getAvailableDrivers()
                 .stream()
