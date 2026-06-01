@@ -1,4 +1,4 @@
-group = 'com.taxidispatcher.services.customer'
+    group = 'com.taxidispatcher.services.customer'
 version = 'unspecified'
 
 bootJar {

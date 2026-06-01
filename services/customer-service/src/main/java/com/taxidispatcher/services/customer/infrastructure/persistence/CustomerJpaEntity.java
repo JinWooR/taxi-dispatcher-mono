@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 사용자 프로필 JPA 엔티티
  */
 @Entity
-@Table(name = "users")
+@Table(name = "customers")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 public class CustomerJpaEntity {
 
     @Id
-    @Column(name = "user_id", columnDefinition = "VARCHAR(36)")
+    @Column(name = "customer_id", columnDefinition = "VARCHAR(36)")
     private String customerId;
 
     @Column(name = "account_id", nullable = false, columnDefinition = "VARCHAR(36)")
