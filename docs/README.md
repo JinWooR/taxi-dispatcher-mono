@@ -26,7 +26,7 @@
 
 **초기 4개 마이크로서비스:**
 - Account Service (계정 관리)
-- User Service (사용자 관리)
+- Customer Service (사용자 관리)
 - Driver Service (기사 관리)
 - Dispatcher Service (배차 관리)
 
@@ -36,7 +36,7 @@
 
 **데이터베이스 전략:**
 - 단일 MySQL 인스턴스
-- 서비스별 스키마 분리 (account_db, user_db, driver_db, dispatcher_db)
+- 서비스별 스키마 분리 (account_db, customer_db, driver_db, dispatcher_db)
 
 **언제 보나**: 프로젝트 초기화, 모듈 생성 시
 

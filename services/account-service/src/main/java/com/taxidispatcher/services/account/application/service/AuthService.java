@@ -8,9 +8,9 @@ import com.taxidispatcher.services.account.domain.token.RefreshToken;
 import com.taxidispatcher.services.account.domain.token.RefreshTokenRepository;
 import com.taxidispatcher.services.account.domain.token.TokenId;
 import com.taxidispatcher.services.account.infrastructure.client.DriverServiceClient;
-import com.taxidispatcher.services.account.infrastructure.client.UserServiceClient;
+import com.taxidispatcher.services.account.infrastructure.client.CustomerServiceClient;
 import com.taxidispatcher.shared.common.dto.driver.internal.DriverInternalProfile;
-import com.taxidispatcher.shared.common.dto.user.internal.UserInternalProfile;
+import com.taxidispatcher.shared.common.dto.customer.internal.CustomerInternalProfile;
 import com.taxidispatcher.shared.common.exception.DomainException;
 import com.taxidispatcher.shared.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccountService accountService;
-    private final UserServiceClient userServiceClient;
+    private final CustomerServiceClient customerServiceClient;
     private final DriverServiceClient driverServiceClient;
 
     @Value("${jwt.expiration.access}")
@@ -51,17 +51,17 @@ public class AuthService {
 
     /**
      * 역할별 actor(프로필 ID) 조회
-     * USER → user-service에서 userId 조회
+     * USER → customer-service에서 userId 조회
      * DRIVER → driver-service에서 driverId 조회
      */
     private String lookupActorByRole(String accountId, String role) {
-        if ("USER".equals(role)) {
-            UserInternalProfile userProfile = userServiceClient.findByAccountId(accountId)
+        if ("CUSTOMER".equals(role)) {
+            CustomerInternalProfile userProfile = customerServiceClient.findByAccountId(accountId)
                     .orElseThrow(() -> new DomainException(
-                            "USER_PROFILE_NOT_FOUND",
-                            "사용자 프로필이 존재하지 않습니다. 프로필 등록 후 시도하세요.",
+                            "CUSTOMER_PROFILE_NOT_FOUND",
+                            "고객 프로필이 존재하지 않습니다. 프로필 등록 후 시도하세요.",
                             HttpStatus.NOT_FOUND));
-            return userProfile.getUserId();
+            return userProfile.getCustomerId();
         }
         if ("DRIVER".equals(role)) {
             DriverInternalProfile driverProfile = driverServiceClient.findByAccountId(accountId)

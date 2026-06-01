@@ -9,10 +9,10 @@ import org.springframework.data.domain.Pageable;
 
 public interface DispatchService {
     // 배차 요청 생성
-    DispatchResponse createDispatch(String userId, CreateDispatchRequest request);
+    DispatchResponse createDispatch(String customerId, CreateDispatchRequest request);
 
-    // 사용자의 배차 목록 조회
-    Page<DispatchResponse> getDispatchesByUser(String userId, Pageable pageable);
+    // 고객의 배차 목록 조회
+    Page<DispatchResponse> getDispatchesByCustomer(String customerId, Pageable pageable);
 
     // 기사의 pending 배차 목록 조회
     Page<DispatchResponse> getPendingDispatches(Pageable pageable);

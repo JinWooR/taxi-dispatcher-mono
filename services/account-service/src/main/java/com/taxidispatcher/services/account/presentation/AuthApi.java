@@ -39,14 +39,14 @@ public interface AuthApi {
     })
     ResponseEntity<CommonResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request);
 
-    @Operation(summary = "사용자 로그인", description = "사용자 권한으로 로그인하여 토큰을 발급받습니다")
+    @Operation(summary = "고객 로그인", description = "고객 권한으로 로그인하여 토큰을 발급받습니다")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "로그인 성공"),
             @ApiResponse(responseCode = "400", description = "잘못된 요청"),
             @ApiResponse(responseCode = "401", description = "인증 실패"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseEntity<CommonResponse<LoginResponse>> loginUser(@Valid @RequestBody LoginRequest request);
+    ResponseEntity<CommonResponse<LoginResponse>> loginCustomer(@Valid @RequestBody LoginRequest request);
 
     @Operation(summary = "기사 로그인", description = "기사 권한으로 로그인하여 토큰을 발급받습니다")
     @ApiResponses(value = {
@@ -75,14 +75,14 @@ public interface AuthApi {
     })
     ResponseEntity<CommonResponse<Void>> logout(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
 
-    @Operation(summary = "사용자 권한 승격", description = "Refresh Token으로 USER 권한 토큰을 발급받습니다. 사용자 프로필 등록 후 사용")
+    @Operation(summary = "고객 권한 승격", description = "Refresh Token으로 USER 권한 토큰을 발급받습니다. 고객 프로필 등록 후 사용")
     @SecurityRequirement(name = BaseOpenApiConfig.REFRESH_TOKEN_SCHEME)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "승격 성공"),
             @ApiResponse(responseCode = "401", description = "유효하지 않은 Refresh Token"),
             @ApiResponse(responseCode = "500", description = "서버 오류")
     })
-    ResponseEntity<CommonResponse<LoginResponse>> upgradeUser(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
+    ResponseEntity<CommonResponse<LoginResponse>> upgradeCustomer(@Parameter(hidden = true) @RequestHeader("Authorization") String bearerToken);
 
     @Operation(summary = "기사 권한 승격", description = "Refresh Token으로 DRIVER 권한 토큰을 발급받습니다. 기사 프로필 등록 후 사용")
     @SecurityRequirement(name = BaseOpenApiConfig.REFRESH_TOKEN_SCHEME)

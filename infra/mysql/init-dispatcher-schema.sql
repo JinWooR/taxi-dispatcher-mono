@@ -16,7 +16,7 @@ USE dispatcher_db;
 -- 배차 요청, 진행 상태, 위치 정보 저장
 CREATE TABLE IF NOT EXISTS dispatches (
     dispatch_id VARCHAR(36) PRIMARY KEY COMMENT '배차 UUID',
-    user_id VARCHAR(36) NOT NULL COMMENT '요청 사용자 ID (user-service FK)',
+    customer_id VARCHAR(36) NOT NULL COMMENT '요청 고객 ID (customer-service FK)',
     driver_id VARCHAR(36) COMMENT '담당 기사 ID (driver-service FK, nullable)',
     dispatch_status VARCHAR(20) NOT NULL COMMENT '배차 상태 (REQUESTED, CANCELLED, FAILED, ASSIGNED, IN_PROGRESS, ARRIVED, COMPLETED)',
 
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS dispatches (
     completed_at DATETIME COMMENT '배차 완료 시간',
 
     -- 인덱스 정의
-    INDEX idx_user_id (user_id),
+    INDEX idx_customer_id (customer_id),
     INDEX idx_driver_id (driver_id),
     INDEX idx_status (dispatch_status),
     INDEX idx_requested_at (requested_at)
