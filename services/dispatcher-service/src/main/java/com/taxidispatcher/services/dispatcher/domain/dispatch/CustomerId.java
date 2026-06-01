@@ -4,10 +4,10 @@ import java.util.Objects;
 import lombok.Getter;
 
 @Getter
-public class UserId {
+public class CustomerId {
     private final String value;
 
-    public UserId(String value) {
+    public CustomerId(String value) {
         this.value = Objects.requireNonNull(value);
     }
 
@@ -15,8 +15,8 @@ public class UserId {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserId userId = (UserId) o;
-        return Objects.equals(value, userId.value);
+        CustomerId customerId = (CustomerId) o;
+        return Objects.equals(value, customerId.value);
     }
 
     @Override

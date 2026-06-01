@@ -25,10 +25,10 @@ public class DispatchController implements DispatchApi {
 
     private final DispatchService dispatchService;
 
-    // ===== User Endpoints =====
+    // ===== Customer Endpoints =====
 
-    @PostMapping("/users")
-    @PreAuthorize("hasRole('USER')")
+    @PostMapping("/customers")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<DispatchResponse>> createDispatch(
         @AuthenticationPrincipal AuthUser authUser,
         @Valid @RequestBody CreateDispatchRequest request
@@ -37,13 +37,13 @@ public class DispatchController implements DispatchApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(CommonResponse.success(response));
     }
 
-    @GetMapping("/users")
-    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/customers")
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<Page<DispatchResponse>>> getMyDispatches(
         @AuthenticationPrincipal AuthUser authUser,
         Pageable pageable
     ) {
-        Page<DispatchResponse> response = dispatchService.getDispatchesByUser(authUser.getActor(), pageable);
+        Page<DispatchResponse> response = dispatchService.getDispatchesByCustomer(authUser.getActor(), pageable);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 
@@ -82,7 +82,7 @@ public class DispatchController implements DispatchApi {
     // ===== Shared Endpoints =====
 
     @GetMapping("/{dispatchId}")
-    @PreAuthorize("hasAnyRole('USER', 'DRIVER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'DRIVER')")
     public ResponseEntity<CommonResponse<DispatchResponse>> getDispatch(
         @PathVariable String dispatchId
     ) {
@@ -91,7 +91,7 @@ public class DispatchController implements DispatchApi {
     }
 
     @PutMapping("/{dispatchId}/status")
-    @PreAuthorize("hasAnyRole('USER', 'DRIVER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'DRIVER')")
     public ResponseEntity<CommonResponse<DispatchResponse>> updateStatus(
         @PathVariable String dispatchId,
         @Valid @RequestBody UpdateDispatchStatusRequest request

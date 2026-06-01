@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "dispatches", indexes = {
-    @Index(name = "idx_user_id", columnList = "user_id"),
+    @Index(name = "idx_customer_id", columnList = "customer_id"),
     @Index(name = "idx_driver_id", columnList = "driver_id"),
     @Index(name = "idx_status", columnList = "dispatch_status"),
     @Index(name = "idx_requested_at", columnList = "requested_at")
@@ -26,8 +26,8 @@ public class DispatchJpaEntity {
     @Column(name = "dispatch_id", columnDefinition = "VARCHAR(36)")
     private String dispatchId;
 
-    @Column(name = "user_id", nullable = false, columnDefinition = "VARCHAR(36)")
-    private String userId;
+    @Column(name = "customer_id", nullable = false, columnDefinition = "VARCHAR(36)")
+    private String customerId;
 
     @Column(name = "driver_id", columnDefinition = "VARCHAR(36)")
     private String driverId;
@@ -79,7 +79,7 @@ public class DispatchJpaEntity {
     public static DispatchJpaEntity from(Dispatch dispatch) {
         return DispatchJpaEntity.builder()
             .dispatchId(dispatch.getDispatchId().getValue())
-            .userId(dispatch.getUserId().getValue())
+            .customerId(dispatch.getCustomerId().getValue())
             .driverId(dispatch.getDriverId() != null ? dispatch.getDriverId().getValue() : null)
             .dispatchStatus(dispatch.getDispatchStatus())
             .departure(LocationEmbedded.from(dispatch.getDeparture()))
@@ -98,7 +98,7 @@ public class DispatchJpaEntity {
     public Dispatch toModel() {
         return Dispatch.reconstitute(
             new DispatchId(dispatchId),
-            new UserId(userId),
+            new CustomerId(customerId),
             driverId != null ? new DriverId(driverId) : null,
             dispatchStatus,
             departure.toModel(),

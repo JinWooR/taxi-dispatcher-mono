@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DispatchJpaRepository extends JpaRepository<DispatchJpaEntity, String> {
 
-    Page<DispatchJpaEntity> findByUserId(String userId, Pageable pageable);
+    Page<DispatchJpaEntity> findByCustomerId(String customerId, Pageable pageable);
 
     Page<DispatchJpaEntity> findByDispatchStatus(DispatchStatus dispatchStatus, Pageable pageable);
 }
