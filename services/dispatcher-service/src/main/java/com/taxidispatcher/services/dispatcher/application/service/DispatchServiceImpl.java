@@ -12,10 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class DispatchServiceImpl implements DispatchService {
 
     private final DispatchRepository dispatchRepository;
+    private final DispatchCandidateRegistrationService candidateRegistrationService;
 
     @Override
     public DispatchResponse createDispatch(String customerId, CreateDispatchRequest request) {
@@ -30,8 +30,12 @@ public class DispatchServiceImpl implements DispatchService {
             request.getArrivalAddress()
         );
 
+        // 1. Dispatch 저장 (JpaRepository 자체 트랜잭션)
         Dispatch dispatch = Dispatch.create(new CustomerId(customerId), departure, arrival);
         Dispatch saved = dispatchRepository.save(dispatch);
+
+        // 2. 후보 기사 검색 + 등록 (단계마다 별도 트랜잭션)
+        candidateRegistrationService.searchAndRegister(saved);
 
         return DispatchResponse.from(saved);
     }
@@ -58,6 +62,7 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
+    @Transactional
     public DispatchResponse acceptDispatch(String dispatchId, String driverId) {
         Dispatch dispatch = findDispatchById(dispatchId);
         dispatch.assignDriver(new DriverId(driverId));
@@ -67,6 +72,7 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
+    @Transactional
     public DispatchResponse rejectDispatch(String dispatchId, String driverId) {
         // TODO: 거절 비즈니스 로직 확정 필요
         // 현재는 단순 조회만 (단일 기사의 거절은 배차 상태에 영향 없음)
@@ -75,6 +81,7 @@ public class DispatchServiceImpl implements DispatchService {
     }
 
     @Override
+    @Transactional
     public DispatchResponse updateDispatchStatus(String dispatchId, UpdateDispatchStatusRequest request) {
         Dispatch dispatch = findDispatchById(dispatchId);
         dispatch.updateStatus(request.getStatus());
