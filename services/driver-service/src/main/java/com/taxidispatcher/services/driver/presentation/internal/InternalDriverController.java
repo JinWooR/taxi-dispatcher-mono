@@ -30,6 +30,13 @@ public class InternalDriverController implements InternalDriverApi {
     }
 
     @Override
+    @GetMapping("/by-id/{driverId}")
+    public ResponseEntity<CommonResponse<DriverInternalProfile>> findByDriverId(@PathVariable String driverId) {
+        DriverInternalProfile profile = driverService.findProfileByDriverId(driverId);
+        return ResponseEntity.ok(CommonResponse.success(profile));
+    }
+
+    @Override
     @GetMapping("/nearby")
     public ResponseEntity<CommonResponse<List<DriverInternalProfile>>> findNearbyDrivers(
             @RequestParam double latitude,

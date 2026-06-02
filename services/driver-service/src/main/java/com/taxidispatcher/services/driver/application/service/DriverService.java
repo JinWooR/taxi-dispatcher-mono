@@ -65,6 +65,17 @@ public class DriverService {
         return toInternalProfile(driver);
     }
 
+    /**
+     * 내부 API: driverId로 기사 프로필 조회 (서비스 간 통신용)
+     */
+    @Transactional(readOnly = true)
+    public DriverInternalProfile findProfileByDriverId(String driverId) {
+        Driver driver = driverRepository.findById(DriverId.of(driverId))
+                .orElseThrow(() -> new DomainException("DRIVER_NOT_FOUND", "기사를 찾을 수 없습니다", HttpStatus.NOT_FOUND));
+
+        return toInternalProfile(driver);
+    }
+
     @Transactional(readOnly = true)
     public Driver getDriver(DriverId driverId) {
         return driverRepository.findById(driverId)

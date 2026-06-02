@@ -33,6 +33,16 @@ public interface InternalDriverApi {
     })
     ResponseEntity<CommonResponse<DriverInternalProfile>> findByAccountId(@PathVariable String accountId);
 
+    @Operation(summary = "driverId로 기사 프로필 조회",
+            description = "기사 ID로 기사 프로필 정보를 조회합니다. 서비스 간 통신용")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공"),
+            @ApiResponse(responseCode = "401", description = "유효하지 않은 API Key"),
+            @ApiResponse(responseCode = "404", description = "프로필 없음"),
+            @ApiResponse(responseCode = "500", description = "서버 오류")
+    })
+    ResponseEntity<CommonResponse<DriverInternalProfile>> findByDriverId(@PathVariable String driverId);
+
     @Operation(summary = "주변 ONLINE 기사 조회",
             description = "특정 위경도 기준 반경 내 ONLINE 상태 기사를 거리 오름차순으로 조회합니다. " +
                     "excludeDriverIds 파라미터로 이미 알림을 받은 기사 등 제외 가능")
