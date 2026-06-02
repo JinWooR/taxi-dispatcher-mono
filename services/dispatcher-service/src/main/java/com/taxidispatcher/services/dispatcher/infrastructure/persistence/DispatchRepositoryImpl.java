@@ -28,6 +28,12 @@ public class DispatchRepositoryImpl implements DispatchRepository {
     }
 
     @Override
+    public Optional<Dispatch> findByIdForUpdate(DispatchId dispatchId) {
+        return jpaRepository.findByIdForUpdate(dispatchId.getValue())
+            .map(DispatchJpaEntity::toModel);
+    }
+
+    @Override
     public Page<Dispatch> findByCustomerId(CustomerId customerId, Pageable pageable) {
         return jpaRepository.findByCustomerId(customerId.getValue(), pageable)
             .map(DispatchJpaEntity::toModel);

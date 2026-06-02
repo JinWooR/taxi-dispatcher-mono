@@ -11,6 +11,11 @@ public interface DispatchRepository {
 
     Optional<Dispatch> findById(DispatchId dispatchId);
 
+    /**
+     * 비관적 락으로 배차 조회 (동시성 처리용)
+     */
+    Optional<Dispatch> findByIdForUpdate(DispatchId dispatchId);
+
     Page<Dispatch> findByCustomerId(CustomerId customerId, Pageable pageable);
 
     Page<Dispatch> findByStatus(DispatchStatus status, Pageable pageable);
