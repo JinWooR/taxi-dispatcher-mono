@@ -15,12 +15,16 @@ CREATE TABLE IF NOT EXISTS drivers (
     plate_number VARCHAR(20) COMMENT '차량번호',
     vehicle_type VARCHAR(50) COMMENT '차종',
     status VARCHAR(20) NOT NULL DEFAULT 'OFFLINE' COMMENT '상태 (OFFLINE, ONLINE, BUSY)',
+    latitude DOUBLE COMMENT '현재 위도',
+    longitude DOUBLE COMMENT '현재 경도',
+    location_updated_at TIMESTAMP NULL COMMENT '위치 최신화 일시',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
 
     UNIQUE KEY uk_account_id (account_id),
     UNIQUE KEY uk_driver_id (driver_id),
     INDEX idx_status (status),
+    INDEX idx_status_location (status, latitude, longitude),
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='택시 기사 정보';

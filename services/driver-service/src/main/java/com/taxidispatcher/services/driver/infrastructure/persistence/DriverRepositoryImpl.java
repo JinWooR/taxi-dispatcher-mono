@@ -57,6 +57,28 @@ public class DriverRepositoryImpl implements DriverRepository {
     }
 
     @Override
+    public List<Driver> findOnlineDriversWithinRadius(
+            double latitude, double longitude, double radiusKm,
+            double minLatitude, double maxLatitude,
+            double minLongitude, double maxLongitude,
+            List<String> excludeDriverIds) {
+
+        // NOT IN ()는 SQL 오류 → 빈 리스트일 때 더미 값으로 대체 + hasExcludes 플래그로 분기
+        boolean hasExcludes = excludeDriverIds != null && !excludeDriverIds.isEmpty();
+        List<String> effectiveExcludes = hasExcludes ? excludeDriverIds : List.of("");
+
+        return jpaRepository.findOnlineDriversWithinRadius(
+                        latitude, longitude, radiusKm,
+                        minLatitude, maxLatitude,
+                        minLongitude, maxLongitude,
+                        hasExcludes ? 1 : 0,
+                        effectiveExcludes)
+                .stream()
+                .map(DriverJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public boolean existsByDriverId(DriverId driverId) {
         return jpaRepository.existsByDriverId(driverId.getValue());
     }

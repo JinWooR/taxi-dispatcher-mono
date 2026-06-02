@@ -11,6 +11,7 @@ public class Driver {
     private String licenseNumber;
     private Vehicle vehicle;
     private DriverStatus status;
+    private Location location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -58,6 +59,10 @@ public class Driver {
         return status;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -80,6 +85,11 @@ public class Driver {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateLocation(double latitude, double longitude) {
+        this.location = Location.of(latitude, longitude);
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public boolean isOnline() {
         return this.status == DriverStatus.ONLINE;
     }
@@ -95,6 +105,10 @@ public class Driver {
     // JPA용 setter 메서드들
     public void setStatus(DriverStatus status) {
         this.status = status;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

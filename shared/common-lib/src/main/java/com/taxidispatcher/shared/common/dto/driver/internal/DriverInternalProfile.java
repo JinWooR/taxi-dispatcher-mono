@@ -30,6 +30,12 @@ public class DriverInternalProfile {
     private String vehicleType;
     private String status;
 
+    private Double latitude;
+    private Double longitude;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
+    private LocalDateTime locationUpdatedAt;
+
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
     private LocalDateTime createdAt;
 
