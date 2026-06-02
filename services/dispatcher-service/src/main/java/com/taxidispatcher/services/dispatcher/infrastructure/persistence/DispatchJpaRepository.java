@@ -10,4 +10,6 @@ public interface DispatchJpaRepository extends JpaRepository<DispatchJpaEntity, 
     Page<DispatchJpaEntity> findByCustomerId(String customerId, Pageable pageable);
 
     Page<DispatchJpaEntity> findByDispatchStatus(DispatchStatus dispatchStatus, Pageable pageable);
+
+    java.util.List<DispatchJpaEntity> findAllByDispatchStatus(DispatchStatus dispatchStatus);
 }

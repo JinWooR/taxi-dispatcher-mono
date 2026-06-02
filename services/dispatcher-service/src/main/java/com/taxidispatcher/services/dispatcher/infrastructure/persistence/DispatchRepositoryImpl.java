@@ -38,4 +38,11 @@ public class DispatchRepositoryImpl implements DispatchRepository {
         return jpaRepository.findByDispatchStatus(status, pageable)
             .map(DispatchJpaEntity::toModel);
     }
+
+    @Override
+    public java.util.List<Dispatch> findAllByStatus(DispatchStatus status) {
+        return jpaRepository.findAllByDispatchStatus(status).stream()
+            .map(DispatchJpaEntity::toModel)
+            .toList();
+    }
 }

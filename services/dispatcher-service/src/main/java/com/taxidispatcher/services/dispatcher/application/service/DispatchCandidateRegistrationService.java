@@ -2,6 +2,7 @@ package com.taxidispatcher.services.dispatcher.application.service;
 
 import com.taxidispatcher.services.dispatcher.domain.candidate.DispatchCandidate;
 import com.taxidispatcher.services.dispatcher.domain.candidate.DispatchCandidateRepository;
+import com.taxidispatcher.services.dispatcher.domain.candidate.DispatchCandidateStatus;
 import com.taxidispatcher.services.dispatcher.domain.dispatch.Dispatch;
 import com.taxidispatcher.services.dispatcher.domain.dispatch.DispatchRepository;
 import com.taxidispatcher.services.dispatcher.domain.dispatch.DispatchStatus;
@@ -105,6 +106,44 @@ public class DispatchCandidateRegistrationService {
     public void markDispatchFailed(Dispatch dispatch) {
         dispatch.updateStatus(DispatchStatus.FAILED);
         dispatchRepository.save(dispatch);
+    }
+
+    /**
+     * 현재 단계의 REQUESTED 후보들을 TIMEOUT으로 변경 (별도 트랜잭션)
+     */
+    @Transactional
+    public void timeoutPendingCandidates(Dispatch dispatch) {
+        List<DispatchCandidate> candidates = candidateRepository.findByDispatchId(dispatch.getDispatchId());
+        for (DispatchCandidate candidate : candidates) {
+            if (candidate.getStatus() == DispatchCandidateStatus.REQUESTED) {
+                candidate.updateStatus(DispatchCandidateStatus.TIMEOUT);
+                candidateRepository.save(candidate);
+            }
+        }
+    }
+
+    /**
+     * 현재 단계의 모든 후보가 응답 완료 (REQUESTED 없음) 여부 확인
+     */
+    public boolean allCandidatesResolved(Dispatch dispatch) {
+        List<DispatchCandidate> candidates = candidateRepository.findByDispatchId(dispatch.getDispatchId());
+        if (candidates.isEmpty()) {
+            return false;
+        }
+        return candidates.stream()
+            .noneMatch(c -> c.getStatus() == DispatchCandidateStatus.REQUESTED);
+    }
+
+    /**
+     * 만료 또는 모든 후보 응답 완료 시 다음 단계로 진행
+     */
+    public void proceedFromExpiredScope(Dispatch dispatch) {
+        if (!dispatch.getSearchScope().hasNextScope()) {
+            self.markDispatchFailed(dispatch);
+            return;
+        }
+        self.expandSearchScope(dispatch);
+        searchAndRegister(dispatch);
     }
 
     /**
