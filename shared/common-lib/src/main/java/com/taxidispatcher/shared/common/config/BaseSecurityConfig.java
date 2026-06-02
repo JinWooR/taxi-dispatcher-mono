@@ -50,6 +50,7 @@ public abstract class BaseSecurityConfig {
     @Order(1)
     public SecurityFilterChain internalSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .securityMatcher("/internal/**")
             .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
             .csrf(csrf -> csrf.disable())
