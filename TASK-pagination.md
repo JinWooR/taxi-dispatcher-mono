@@ -116,7 +116,7 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 - 정렬 화이트리스트 정의 및 적용
 
 서비스별 진행 상태:
-- [ ] **dispatcher-service** (선행 검증 권장: 정렬 가능 API 다수 보유)
+- [x] **dispatcher-service** (선행 검증 권장: 정렬 가능 API 다수 보유)
 - [ ] **driver-service**
 - [ ] **user-service**
 - [ ] **account-service**
