@@ -55,16 +55,21 @@ sort    : List<String>  (예: ["requestedAt,desc", "status,asc"])
 - 변환 메서드 없음 (Spring Data 의존성 회피)
 - 검증 어노테이션: `jakarta.validation-api`
 
-### 2. DateRangeRequest (common-lib, 순수 DTO)
+### 2. DateRangeRequest (common-lib, DTO + TimeConverter 활용 변환 메서드)
 
 ```
 startDate : Instant   (ISO 8601, UTC 절대 시각)
 endDate   : Instant   (ISO 8601, UTC 절대 시각)
+
+# 변환 메서드 (TimeConverter 내부 활용)
+public LocalDateTime startAsLocalDateTime()
+public LocalDateTime endAsLocalDateTime()
 ```
 
 - 클라이언트 입력 예: `"2026-06-04T14:30:00+09:00"`, `"2026-06-04T05:30:00Z"`
 - Jackson이 ISO 8601 → Instant 자동 파싱 (시간대 정보 활용)
 - 검색 범위는 클라이언트가 정확히 명시
+- 변환 메서드 제공으로 호출 측 편의성/일관성 확보 (null-safe 처리 포함)
 
 ### 3. TimeConverter (common-lib, static utility)
 
@@ -77,6 +82,7 @@ public static Instant toInstant(LocalDateTime utcLdt)
 
 - **Java 표준 라이브러리만 사용** → common-lib에 통합
 - 모든 서비스가 동일 변환 로직 사용 (UTC 약속 일관성)
+- `DateRangeRequest` 내부에서도 이 유틸리티 활용
 
 ### 4. PageableConverter (각 서비스, static utility)
 
@@ -99,21 +105,23 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 ### Phase 1: shared/common-lib
 
 - [x] `jakarta.validation-api` 의존성 추가
-- [x] `PageableRequest`, `DateRangeRequest` DTO 생성
+- [x] `PageableRequest`, `DateRangeRequest` DTO 생성 (`DateRangeRequest`는 TimeConverter 활용 변환 메서드 포함)
 - [x] `TimeConverter` utility 생성
 
-### Phase 2: dispatcher-service (선행 검증)
+### Phase 2: 각 서비스 적용
 
-- [ ] `PageableConverter` utility 생성
-- [ ] 페이징 API 시그니처 변경 (`Pageable` → `PageableRequest`)
-- [ ] 정렬 화이트리스트 정의 및 적용
+서비스별 공통 작업:
+- `PageableConverter` utility 생성
+- 페이징 API 시그니처 변경 (`Pageable` → `PageableRequest`)
+- 정렬 화이트리스트 정의 및 적용
 
-### Phase 3: driver-service / user-service / account-service
+서비스별 진행 상태:
+- [ ] **dispatcher-service** (선행 검증 권장: 정렬 가능 API 다수 보유)
+- [ ] **driver-service**
+- [ ] **user-service**
+- [ ] **account-service**
 
-- [ ] 각 서비스에 `PageableConverter` 추가
-- [ ] 페이징 API 시그니처 변경 및 화이트리스트 적용
-
-### Phase 4: 공통 문서 갱신
+### Phase 3: 공통 문서 갱신
 
 - [ ] `docs/05-api-common-rules.md`에 페이지네이션/정렬/날짜 표준 추가
 
@@ -122,7 +130,7 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 ```
 1. common-lib (DTO + TimeConverter)
    ↓
-2. dispatcher-service (PageableConverter 검증)
+2. dispatcher-service (선행 검증)
    ↓
 3. driver / user / account-service 순차 적용
    ↓
@@ -146,6 +154,8 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 - **변환 로직 위치**:
   - `TimeConverter` → common-lib (Java 표준만 사용, 의존성 부담 없음)
   - `PageableConverter` → 각 서비스 (Spring Data 의존)
+- **DateRangeRequest 변환 메서드**: TimeConverter 활용한 변환 메서드를 DTO에 포함
+  - 호출자 편의성 + 변환 일관성 + null-safe 처리 중앙화
 - **시간 타입 전략**: API는 `Instant`, 내부/JPA는 `LocalDateTime` (UTC 약속)
 - **날짜 정밀도(DatePrecision) 제외**:
   - Instant + ISO 8601이 이미 표준 → 추가 메타데이터 불필요
