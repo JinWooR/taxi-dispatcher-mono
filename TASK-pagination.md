@@ -98,9 +98,9 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 
 ### Phase 1: shared/common-lib
 
-- [ ] `jakarta.validation-api` 의존성 추가
-- [ ] `PageableRequest`, `DateRangeRequest` DTO 생성
-- [ ] `TimeConverter` utility 생성
+- [x] `jakarta.validation-api` 의존성 추가
+- [x] `PageableRequest`, `DateRangeRequest` DTO 생성
+- [x] `TimeConverter` utility 생성
 
 ### Phase 2: dispatcher-service (선행 검증)
 
