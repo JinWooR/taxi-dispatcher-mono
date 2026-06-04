@@ -3,6 +3,7 @@ package com.taxidispatcher.services.account.infrastructure.client;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.taxidispatcher.shared.common.dto.customer.internal.CustomerInternalProfile;
+import com.taxidispatcher.shared.common.exception.DomainException;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -60,11 +61,17 @@ public class CustomerServiceClient {
                 return Optional.empty();
             }
             log.error("customer-service 호출 실패: status={}, accountId={}", e.getStatusCode(), accountId);
-            throw new RuntimeException("customer-service 호출 실패", e);
+            throw new DomainException(
+                    "CUSTOMER_SERVICE_UNAVAILABLE",
+                    "고객 서비스에 일시적으로 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+                    HttpStatus.SERVICE_UNAVAILABLE);
 
         } catch (Exception e) {
-            log.error("customer-service 응답 파싱 실패: accountId={}", accountId, e);
-            throw new RuntimeException("customer-service 응답 처리 실패", e);
+            log.error("customer-service 호출 중 오류 발생: accountId={}", accountId, e);
+            throw new DomainException(
+                    "CUSTOMER_SERVICE_UNAVAILABLE",
+                    "고객 서비스에 일시적으로 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+                    HttpStatus.SERVICE_UNAVAILABLE);
         }
     }
 }
