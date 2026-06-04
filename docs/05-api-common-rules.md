@@ -47,11 +47,35 @@ GET /api/dispatches?page=0&size=20&sort=createdAt,desc
 
 **쿼리 파라미터**
 
-| 파라미터 | 타입 | 기본값 | 설명 |
-|---------|------|-------|------|
-| `page` | int | 0 | 페이지 번호 (0부터 시작) |
-| `size` | int | 20 | 페이지 크기 |
-| `sort` | String | - | 정렬 (필드명,asc/desc) |
+| 파라미터 | 타입 | 기본값 | 제약 | 설명 |
+|---------|------|-------|------|------|
+| `page` | int | 0 | `@Min(0)` | 페이지 번호 (0부터 시작) |
+| `size` | int | 20 | `@Min(1) @Max(100)` | 페이지 크기 |
+| `sort` | String[] | - | API별 화이트리스트 | 정렬 (`field,direction` 콤마 구분, 다중 가능) |
+
+**정렬 표현 규칙**
+
+- 형식: `field,direction` (예: `requestedAt,desc`)
+- direction: `asc` | `desc` (생략 시 `asc`)
+- 다중 정렬: `sort` 파라미터 반복 (`?sort=A,desc&sort=B,asc`)
+- `+/-` 접두사 사용 금지 (URL 인코딩 이슈)
+
+**페이지네이션 요청 DTO 패턴**
+
+- `shared/common-lib`의 `PageableRequest`는 **추상 클래스**
+- 각 API별로 본 클래스를 상속하여 `allowedSortFields()` 구현 필수
+- 정렬 화이트리스트 검증은 부모의 `@AssertTrue` 메서드가 Bean Validation으로 자동 수행
+- Spring Data `Pageable` 변환은 각 서비스의 `PageableConverter` 유틸 사용
+
+```java
+// 예시: dispatcher-service
+public class CustomerDispatchPageRequest extends PageableRequest {
+    @Override
+    protected Set<String> allowedSortFields() {
+        return Set.of("requestedAt", "dispatchStatus");
+    }
+}
+```
 
 **응답**
 
@@ -350,25 +374,31 @@ public class AccountController implements AccountApi {
 
 ---
 
-## 🕐 타임스탐프 정책
+## 🕐 시간 타입 전략
 
-### 저장: Unix Timestamp
+### 계층별 타입 약속
 
-```java
-@Entity
-public class Dispatch {
-    @Id
-    private Long id;
-    
-    @CreationTimestamp
-    @Column(columnDefinition = "BIGINT")
-    private Long createdAt;  // Unix Timestamp (초 단위)
-    
-    @UpdateTimestamp
-    @Column(columnDefinition = "BIGINT")
-    private Long updatedAt;  // Unix Timestamp
-}
+| 계층 | 타입 | 시간대 약속 |
+|------|------|------------|
+| API 입출력 (DTO) | `Instant` | UTC 절대 시각 (ISO 8601 자동 처리) |
+| Application/Domain | `LocalDateTime` | UTC 기준 |
+| JPA Entity / DB | `LocalDateTime` | UTC 기준 (`hibernate.jdbc.time_zone: UTC`) |
+
+**근거:**
+- API 입출력은 `Instant`로 글로벌 시간대 대응 (`+09:00`, `Z`, `-04:00` 등 자동 정규화)
+- 내부/JPA는 `LocalDateTime`을 UTC 기준으로 약속 (기존 패턴 유지)
+- `LocalDateTime`은 시간대 정보가 없으므로 **반드시 UTC로 약속하여 사용**
+
+### 변환 규칙
+
 ```
+Instant → LocalDateTime: LocalDateTime.ofInstant(instant, ZoneOffset.UTC)
+LocalDateTime → Instant: ldt.atOffset(ZoneOffset.UTC).toInstant()
+```
+
+- 변환 유틸: `shared/common-lib`의 `TimeConverter` 사용
+- `DateRangeRequest`는 내부에서 `TimeConverter`를 활용한 변환 메서드 제공
+  - `startAsLocalDateTime()`, `endAsLocalDateTime()`
 
 ### 응답: ISO 8601 with Z
 
@@ -582,6 +612,18 @@ public class GlobalExceptionHandler {
     }
 }
 ```
+
+---
+
+## 📦 common-lib 의존성 정책
+
+- **`shared/common-lib`는 가벼움 유지**
+- **허용**: API 스펙성 의존성 (어노테이션/인터페이스 위주), Java 표준 라이브러리
+  - 예: `jakarta.validation-api` (검증 어노테이션 스펙)
+- **금지**: 구현체 의존성 (Hibernate Validator, Spring Data 등)
+- 의존성이 발생하는 변환 로직(Spring Data 등)은 각 서비스의 utility 클래스로 분리
+  - 예: `PageableConverter` → 각 서비스 위치
+  - 예: `TimeConverter` → Java 표준만 사용하므로 common-lib에 위치
 
 ---
 

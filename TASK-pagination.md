@@ -116,14 +116,14 @@ public static Pageable toPageable(PageableRequest request, Set<String> allowedFi
 - 정렬 화이트리스트 정의 및 적용
 
 서비스별 진행 상태:
-- [x] **dispatcher-service** (선행 검증 권장: 정렬 가능 API 다수 보유)
-- [ ] **driver-service**
-- [ ] **user-service**
-- [ ] **account-service**
+- [x] **dispatcher-service** (선행 검증 완료)
+- [ ] ~~**driver-service**~~ (페이징 API 없음, 적용 대상 아님)
+- [ ] ~~**user-service**~~ (페이징 API 없음, 적용 대상 아님)
+- [ ] ~~**account-service**~~ (페이징 API 없음, 적용 대상 아님)
 
 ### Phase 3: 공통 문서 갱신
 
-- [ ] `docs/05-api-common-rules.md`에 페이지네이션/정렬/날짜 표준 추가
+- [x] `docs/05-api-common-rules.md`에 페이지네이션/정렬/날짜 표준 추가
 
 ## 마이그레이션 순서
 
