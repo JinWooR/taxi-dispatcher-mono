@@ -70,7 +70,7 @@
 - 페이지네이션 자식 클래스(예: `CustomerDispatchPageRequest`)는 **클래스 레벨 `@Schema(description)` 로 허용 정렬 필드 명시**
 
 서비스별 진행 상태:
-- [ ] **account-service**
+- [x] **account-service**
   - Request: `LoginRequest`, `RegisterRequest`
   - Response: `LoginResponse`, `RegisterResponse`, `TokenInfo`
 - [ ] **customer-service**
