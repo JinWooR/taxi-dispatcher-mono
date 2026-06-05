@@ -86,7 +86,7 @@
 
 ### Phase 4: 공통 문서 갱신 (`docs/05-api-common-rules.md`)
 
-- [ ] Swagger 명세 표준 추가
+- [x] Swagger 명세 표준 추가
   - DTO 필드 `@Schema` 적용 정책
   - Query String 객체 입력 시 `@ParameterObject` 적용 정책
   - 페이지네이션 sort 항목 노출 정책
