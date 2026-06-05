@@ -1,7 +1,7 @@
 # 5️⃣ API 공통 규칙 정의
 
 **상태**: 완료  
-**마지막 업데이트**: 2026-05-16
+**마지막 업데이트**: 2026-06-05
 
 ---
 
@@ -357,6 +357,47 @@ public class AccountController implements AccountApi {
         return ApiResponse.success(AccountResponse.from(account));
     }
 }
+```
+
+### Swagger 명세 표준
+
+본 프로젝트의 모든 서비스는 아래 명세 표준을 따른다. (신규 DTO/Api 추가 시에도 동일 적용)
+
+**1. Request/Response DTO 필드**
+
+- 모든 DTO 필드에 `@Schema(description = "...")` 명시
+- 필요 시 `example`, `defaultValue`, 길이/범위 제약(`minLength`/`maxLength`/`minimum`/`maximum`) 함께 제공
+- 필수 입력 필드는 `requiredMode = Schema.RequiredMode.REQUIRED` 사용
+
+```java
+@Schema(description = "로그인 ID (이메일)", example = "user@example.com",
+        requiredMode = Schema.RequiredMode.REQUIRED)
+@NotBlank @Email
+private String loginId;
+```
+
+**2. Query String 객체 입력 → `@ParameterObject`**
+
+- API 인터페이스에서 객체를 Query String으로 받는 경우 `@org.springdoc.core.annotations.ParameterObject` 선언 필수
+- 위치: **API 인터페이스(`*Api.java`) 만** 적용. Controller 구현체에는 불필요 (인터페이스 메타데이터 상속됨)
+- 효과: Swagger UI에서 객체가 통째로 노출되지 않고 개별 Query 필드로 명세화됨
+
+```java
+ResponseEntity<...> getMyDispatches(
+    @AuthenticationPrincipal AuthUser authUser,
+    @ParameterObject @Valid CustomerDispatchPageRequest pageRequest);
+```
+
+**3. 페이지네이션 (`PageableRequest`)**
+
+- `page`, `size`: 의미가 자명하므로 `@Schema` 설명 누락 허용
+- `sort`: **반드시 `@Schema` 로 노출** (`field,direction` 형식 안내) — `PageableRequest`에서 이미 적용됨
+- API별 허용 정렬 필드: **자식 클래스에 클래스 레벨 `@Schema(description=...)`** 로 명시
+
+```java
+@Schema(description = "고객 배차 목록 페이지네이션 요청. " +
+        "허용 정렬 필드: `requestedAt`, `dispatchStatus`")
+public class CustomerDispatchPageRequest extends PageableRequest { ... }
 ```
 
 ### Swagger UI 접근
