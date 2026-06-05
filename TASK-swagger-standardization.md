@@ -56,10 +56,10 @@
 - Operation 설명에 페이지네이션/정렬 옵션 안내 보강 (해당 API만)
 
 서비스별 진행 상태:
-- [ ] **account-service** (`AuthApi`)
-- [ ] **customer-service** (`CustomerApi`, `InternalCustomerApi`)
-- [ ] **dispatcher-service** (`DispatchApi`)
-- [ ] **driver-service** (`DriverApi`, `InternalDriverApi`)
+- [x] **account-service** (`AuthApi`) — 객체형 Query String 없음, 변경 없음
+- [x] **customer-service** (`CustomerApi`, `InternalCustomerApi`) — 객체형 Query String 없음, 변경 없음
+- [x] **dispatcher-service** (`DispatchApi`) — `getMyDispatches`, `getPendingDispatches`에 `@ParameterObject` 적용
+- [x] **driver-service** (`DriverApi`, `InternalDriverApi`) — `@RequestParam` 단일 사용, 변경 없음
 
 ### Phase 3: 각 서비스 DTO 적용
 
