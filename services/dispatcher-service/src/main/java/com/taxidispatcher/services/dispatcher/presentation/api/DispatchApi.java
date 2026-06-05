@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,7 +48,7 @@ public interface DispatchApi {
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     ResponseEntity<CommonResponse<Page<DispatchResponse>>> getMyDispatches(
             @AuthenticationPrincipal AuthUser authUser,
-            @Valid CustomerDispatchPageRequest pageRequest);
+            @ParameterObject @Valid CustomerDispatchPageRequest pageRequest);
 
     // ===== Driver Endpoints =====
 
@@ -57,7 +58,7 @@ public interface DispatchApi {
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     ResponseEntity<CommonResponse<Page<DispatchResponse>>> getPendingDispatches(
             @AuthenticationPrincipal AuthUser authUser,
-            @Valid DriverPendingPageRequest pageRequest);
+            @ParameterObject @Valid DriverPendingPageRequest pageRequest);
 
     @Operation(summary = "배차 승인", description = "기사가 배차 요청 승인")
     @ApiResponse(responseCode = "200", description = "배차 승인 성공")
