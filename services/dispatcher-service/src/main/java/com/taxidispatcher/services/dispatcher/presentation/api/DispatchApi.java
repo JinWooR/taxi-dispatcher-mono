@@ -1,6 +1,8 @@
 package com.taxidispatcher.services.dispatcher.presentation.api;
 
 import com.taxidispatcher.services.dispatcher.application.dto.request.CreateDispatchRequest;
+import com.taxidispatcher.services.dispatcher.application.dto.request.CustomerDispatchPageRequest;
+import com.taxidispatcher.services.dispatcher.application.dto.request.DriverPendingPageRequest;
 import com.taxidispatcher.services.dispatcher.application.dto.request.UpdateDispatchStatusRequest;
 import com.taxidispatcher.services.dispatcher.application.dto.response.DispatchResponse;
 import com.taxidispatcher.shared.common.config.BaseOpenApiConfig;
@@ -15,7 +17,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +47,7 @@ public interface DispatchApi {
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     ResponseEntity<CommonResponse<Page<DispatchResponse>>> getMyDispatches(
             @AuthenticationPrincipal AuthUser authUser,
-            Pageable pageable);
+            @Valid CustomerDispatchPageRequest pageRequest);
 
     // ===== Driver Endpoints =====
 
@@ -56,7 +57,7 @@ public interface DispatchApi {
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     ResponseEntity<CommonResponse<Page<DispatchResponse>>> getPendingDispatches(
             @AuthenticationPrincipal AuthUser authUser,
-            Pageable pageable);
+            @Valid DriverPendingPageRequest pageRequest);
 
     @Operation(summary = "배차 승인", description = "기사가 배차 요청 승인")
     @ApiResponse(responseCode = "200", description = "배차 승인 성공")

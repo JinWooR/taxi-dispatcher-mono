@@ -1,9 +1,12 @@
 package com.taxidispatcher.services.dispatcher.presentation.api;
 
 import com.taxidispatcher.services.dispatcher.application.dto.request.CreateDispatchRequest;
+import com.taxidispatcher.services.dispatcher.application.dto.request.CustomerDispatchPageRequest;
+import com.taxidispatcher.services.dispatcher.application.dto.request.DriverPendingPageRequest;
 import com.taxidispatcher.services.dispatcher.application.dto.request.UpdateDispatchStatusRequest;
 import com.taxidispatcher.services.dispatcher.application.dto.response.DispatchResponse;
 import com.taxidispatcher.services.dispatcher.application.service.DispatchService;
+import com.taxidispatcher.services.dispatcher.infrastructure.util.PageableConverter;
 import com.taxidispatcher.shared.common.jwt.AuthUser;
 import com.taxidispatcher.shared.common.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -41,8 +44,9 @@ public class DispatchController implements DispatchApi {
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CommonResponse<Page<DispatchResponse>>> getMyDispatches(
         @AuthenticationPrincipal AuthUser authUser,
-        Pageable pageable
+        @Valid CustomerDispatchPageRequest pageRequest
     ) {
+        Pageable pageable = PageableConverter.toPageable(pageRequest);
         Page<DispatchResponse> response = dispatchService.getDispatchesByCustomer(authUser.getActor(), pageable);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
@@ -53,8 +57,9 @@ public class DispatchController implements DispatchApi {
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<Page<DispatchResponse>>> getPendingDispatches(
         @AuthenticationPrincipal AuthUser authUser,
-        Pageable pageable
+        @Valid DriverPendingPageRequest pageRequest
     ) {
+        Pageable pageable = PageableConverter.toPageable(pageRequest);
         Page<DispatchResponse> response = dispatchService.getPendingDispatches(pageable);
         return ResponseEntity.ok(CommonResponse.success(response));
     }
