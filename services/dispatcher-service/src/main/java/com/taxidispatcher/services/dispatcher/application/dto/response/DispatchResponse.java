@@ -2,6 +2,7 @@ package com.taxidispatcher.services.dispatcher.application.dto.response;
 
 import com.taxidispatcher.services.dispatcher.domain.dispatch.Dispatch;
 import com.taxidispatcher.services.dispatcher.domain.dispatch.DispatchStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,37 +12,53 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DispatchResponse {
-    // 배차 ID
+
+    @Schema(description = "배차 ID (UUID)", example = "990e8400-e29b-41d4-a716-446655440004")
     private String dispatchId;
-    // 배차 상태
+
+    @Schema(description = "배차 상태", example = "PENDING")
     private DispatchStatus dispatchStatus;
-    // 기사 ID
+
+    @Schema(description = "배정된 기사 ID (UUID). 미배정 시 null", example = "770e8400-e29b-41d4-a716-446655440002")
     private String driverId;
-    // 출발지 위도
+
+    @Schema(description = "출발지 위도", example = "37.5665")
     private double departureLatitude;
-    // 출발지 경도
+
+    @Schema(description = "출발지 경도", example = "126.9780")
     private double departureLongitude;
-    // 출발지 주소
+
+    @Schema(description = "출발지 주소", example = "서울특별시 중구 세종대로 110")
     private String departureAddress;
-    // 도착지 위도
+
+    @Schema(description = "도착지 위도", example = "37.5172")
     private double arrivalLatitude;
-    // 도착지 경도
+
+    @Schema(description = "도착지 경도", example = "127.0473")
     private double arrivalLongitude;
-    // 도착지 주소
+
+    @Schema(description = "도착지 주소", example = "서울특별시 강남구 테헤란로 521")
     private String arrivalAddress;
-    // 배차 요청 시간
+
+    @Schema(description = "배차 요청 시각 (UTC, ISO 8601)", example = "2026-06-04T05:30:00Z")
     private LocalDateTime requestedAt;
-    // 배차 실패 시간
+
+    @Schema(description = "배차 실패 시각 (UTC, ISO 8601). 실패 전 null", example = "2026-06-04T05:32:00Z")
     private LocalDateTime failedAt;
-    // 배차 승인 시간
+
+    @Schema(description = "배차 승인 시각 (UTC, ISO 8601). 승인 전 null", example = "2026-06-04T05:31:00Z")
     private LocalDateTime approvedAt;
-    // 출발 시간
+
+    @Schema(description = "출발 시각 (UTC, ISO 8601)", example = "2026-06-04T05:35:00Z")
     private LocalDateTime departedAt;
-    // 목적지 도착 시간
+
+    @Schema(description = "목적지 도착 시각 (UTC, ISO 8601)", example = "2026-06-04T06:00:00Z")
     private LocalDateTime arrivedAt;
-    // 배차 완료 시간
+
+    @Schema(description = "배차 완료 시각 (UTC, ISO 8601)", example = "2026-06-04T06:05:00Z")
     private LocalDateTime completedAt;
-    // 현재 탐색 범위 (km)
+
+    @Schema(description = "현재 기사 탐색 반경 (km)", example = "3")
     private int currentSearchScope;
 
     public static DispatchResponse from(Dispatch dispatch) {
