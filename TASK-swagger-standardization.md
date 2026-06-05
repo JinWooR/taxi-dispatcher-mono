@@ -80,7 +80,7 @@
   - Request: `CreateDispatchRequest`, `UpdateDispatchStatusRequest`
   - Request (페이지): `CustomerDispatchPageRequest`, `DriverPendingPageRequest`
   - Response: `DispatchResponse`
-- [ ] **driver-service**
+- [x] **driver-service**
   - Request: `RegisterDriverRequest`, `UpdateDriverRequest`, `ChangeStatusRequest`, `UpdateLocationRequest`
   - Response: `DriverResponse`
 
