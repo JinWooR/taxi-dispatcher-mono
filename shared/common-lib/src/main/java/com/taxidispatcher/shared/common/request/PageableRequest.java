@@ -1,6 +1,7 @@
 package com.taxidispatcher.shared.common.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -32,6 +33,12 @@ public abstract class PageableRequest {
     @Max(100)
     private int size = 20;
 
+    @Schema(
+            description = "정렬 옵션. `field,direction` 형식 (direction 생략 시 asc). 다중 정렬 가능. " +
+                    "허용 필드는 각 API별로 다르므로 자식 클래스 설명을 참조.",
+            example = "requestedAt,desc",
+            type = "array"
+    )
     private List<String> sort;
 
     /**
