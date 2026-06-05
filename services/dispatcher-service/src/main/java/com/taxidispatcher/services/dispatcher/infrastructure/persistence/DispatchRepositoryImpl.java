@@ -28,6 +28,12 @@ public class DispatchRepositoryImpl implements DispatchRepository {
     }
 
     @Override
+    public Optional<Dispatch> findByIdForUpdate(DispatchId dispatchId) {
+        return jpaRepository.findByIdForUpdate(dispatchId.getValue())
+            .map(DispatchJpaEntity::toModel);
+    }
+
+    @Override
     public Page<Dispatch> findByCustomerId(CustomerId customerId, Pageable pageable) {
         return jpaRepository.findByCustomerId(customerId.getValue(), pageable)
             .map(DispatchJpaEntity::toModel);
@@ -37,5 +43,12 @@ public class DispatchRepositoryImpl implements DispatchRepository {
     public Page<Dispatch> findByStatus(DispatchStatus status, Pageable pageable) {
         return jpaRepository.findByDispatchStatus(status, pageable)
             .map(DispatchJpaEntity::toModel);
+    }
+
+    @Override
+    public java.util.List<Dispatch> findAllByStatus(DispatchStatus status) {
+        return jpaRepository.findAllByDispatchStatus(status).stream()
+            .map(DispatchJpaEntity::toModel)
+            .toList();
     }
 }

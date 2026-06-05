@@ -50,8 +50,31 @@ CREATE TABLE IF NOT EXISTS dispatches (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='배차 정보';
 
 -- ============================================================================
+-- 2. Dispatch Candidates 테이블
+-- ============================================================================
+-- 배차 후보 기사
+-- 출발지 주변 기사에게 배차 요청 알림 후 응답 상태 관리
+CREATE TABLE IF NOT EXISTS dispatch_candidates (
+    candidate_id VARCHAR(36) PRIMARY KEY COMMENT '후보 UUID',
+    dispatch_id VARCHAR(36) NOT NULL COMMENT '배차 ID',
+    driver_id VARCHAR(36) NOT NULL COMMENT '기사 ID (driver-service FK)',
+    status VARCHAR(30) NOT NULL COMMENT '상태 (REQUESTED, ACCEPTED, REJECTED, ACCEPT_CANCELLED, CUSTOMER_CANCELLED, TIMEOUT)',
+    created_at DATETIME NOT NULL COMMENT '등록 일시',
+    updated_at DATETIME NOT NULL COMMENT '수정 일시',
+
+    -- 중복 방지: 한 배차에 동일 기사 중복 등록 불가
+    UNIQUE KEY uk_dispatch_driver (dispatch_id, driver_id),
+
+    -- 인덱스 정의
+    INDEX idx_dispatch_id (dispatch_id),
+    INDEX idx_driver_id (driver_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='배차 후보 기사';
+
+-- ============================================================================
 -- 데이터베이스 초기화 완료
 -- ============================================================================
 -- 스키마 생성 완료: dispatcher_db
 -- 테이블:
 --   - dispatches: 배차 정보 (요청, 상태, 위치, 탐색 범위, 타임스탬프)
+--   - dispatch_candidates: 배차 후보 기사 (상태별 응답 관리)

@@ -60,7 +60,15 @@ public interface DispatchApi {
             @AuthenticationPrincipal AuthUser authUser,
             @ParameterObject @Valid DriverPendingPageRequest pageRequest);
 
-    @Operation(summary = "배차 승인", description = "기사가 배차 요청 승인")
+    @Operation(
+            summary = "배차 승인",
+            description = """
+                    기사가 배차 요청을 승인한다.
+                    - 동시 승인 방지를 위해 비관적 락(SELECT FOR UPDATE) 적용
+                    - 승인 성공 시: Dispatch → ASSIGNED, 해당 기사 후보 → ACCEPTED
+                    - 동일 배차의 다른 REQUESTED 후보는 자동으로 TIMEOUT 처리
+                    """
+    )
     @ApiResponse(responseCode = "200", description = "배차 승인 성공")
     @ApiResponse(responseCode = "404", description = "배차를 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "409", description = "상태 전이 불가", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
@@ -70,9 +78,16 @@ public interface DispatchApi {
             @Parameter(description = "배차 ID") @PathVariable String dispatchId,
             @AuthenticationPrincipal AuthUser authUser);
 
-    @Operation(summary = "배차 거절", description = "기사가 배차 요청 거절")
+    @Operation(
+            summary = "배차 거절",
+            description = """
+                    기사가 배차 요청을 거절한다.
+                    - 해당 기사 후보만 REJECTED 처리
+                    - Dispatch 상태는 변경되지 않으며, 다른 후보가 승인 가능
+                    """
+    )
     @ApiResponse(responseCode = "200", description = "배차 거절 처리 성공")
-    @ApiResponse(responseCode = "404", description = "배차를 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
+    @ApiResponse(responseCode = "404", description = "배차 후보를 찾을 수 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "401", description = "인증 실패", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(implementation = CommonResponse.class)))
     ResponseEntity<CommonResponse<DispatchResponse>> rejectDispatch(
