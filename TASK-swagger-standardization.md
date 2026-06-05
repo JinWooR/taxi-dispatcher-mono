@@ -76,7 +76,7 @@
 - [x] **customer-service**
   - Request: `RegisterCustomerRequest`, `UpdateCustomerRequest`
   - Response: `CustomerProfileResponse`
-- [ ] **dispatcher-service**
+- [x] **dispatcher-service**
   - Request: `CreateDispatchRequest`, `UpdateDispatchStatusRequest`
   - Request (페이지): `CustomerDispatchPageRequest`, `DriverPendingPageRequest`
   - Response: `DispatchResponse`
