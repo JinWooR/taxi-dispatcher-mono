@@ -73,7 +73,7 @@
 - [x] **account-service**
   - Request: `LoginRequest`, `RegisterRequest`
   - Response: `LoginResponse`, `RegisterResponse`, `TokenInfo`
-- [ ] **customer-service**
+- [x] **customer-service**
   - Request: `RegisterCustomerRequest`, `UpdateCustomerRequest`
   - Response: `CustomerProfileResponse`
 - [ ] **dispatcher-service**
