@@ -1,6 +1,7 @@
 package com.taxidispatcher.shared.common.request;
 
 import com.taxidispatcher.shared.common.util.TimeConverter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,8 +21,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class DateRangeRequest {
 
+    @Schema(
+            description = "검색 시작 시각 (UTC 절대 시각, ISO 8601). 시간대 표기는 자유 (예: `Z`, `+09:00`).",
+            example = "2026-06-01T00:00:00Z"
+    )
     private Instant startDate;
 
+    @Schema(
+            description = "검색 종료 시각 (UTC 절대 시각, ISO 8601).",
+            example = "2026-06-30T23:59:59Z"
+    )
     private Instant endDate;
 
     /**

@@ -45,9 +45,9 @@
 
 ### Phase 1: 공용 라이브러리 (`shared/common-lib`)
 
-- [ ] `PageableRequest.sort` 필드에 `@Schema` 적용 (page/size는 생략 가능)
-- [ ] `DateRangeRequest` 필드에 `@Schema` 적용
-- [ ] 내부 통신 공용 DTO (`CustomerInternalProfile`, `DriverInternalProfile`) 필드에 `@Schema` 적용
+- [x] `PageableRequest.sort` 필드에 `@Schema` 적용 (page/size는 생략 가능)
+- [x] `DateRangeRequest` 필드에 `@Schema` 적용
+- [x] 내부 통신 공용 DTO (`CustomerInternalProfile`, `DriverInternalProfile`) 필드에 `@Schema` 적용
 
 ### Phase 2: 각 서비스 Api 인터페이스 적용
 
