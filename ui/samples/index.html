@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>택시 배차 시스템</title>
+  <!-- ✅ 절대 경로 사용 -->
+  <link rel="stylesheet" href="/styles/main.css">
+  <style>
+    .welcome {
+      text-align: center;
+      padding: 100px 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome h1 {
+      font-size: 36px;
+      margin-bottom: 15px;
+      color: #007bff;
+    }
+
+    .welcome p {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .status {
+      font-size: 16px;
+      color: #666;
+    }
+
+    .btn-primary {
+      padding: 12px 30px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+
+    .btn-primary:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="welcome">
+      <h1>🚕 택시 배차 시스템</h1>
+      <p>API 흐름 검증용 정적 UI</p>
+      <div id="status" class="status">로딩 중...</div>
+    </div>
+  </div>
+
+  <!-- 공통 모듈 로드 (✅ 절대 경로) -->
+  <script src="/common/config.js"></script>
+  <script src="/common/api.js"></script>
+  <script src="/common/auth.js"></script>
+
+  <!-- 서비스 로드 -->
+  <script src="/common/services/AuthService.js"></script>
+
+  <!-- 진입점 로직 -->
+  <script>
+    /**
+     * 애플리케이션 진입점
+     *
+     * 흐름:
+     * 1. Auth 상태 확인
+     * 2. 인증됨 → 역할에 따라 대시보드로 이동
+     * 3. 미인증 → 로그인 페이지로 이동
+     */
+    function initApp() {
+      const statusDiv = document.getElementById('status');
+
+      // 인증 상태 확인
+      if (Auth.isAuthenticated()) {
+        // 역할에 따라 대시보드로 이동
+        if (Auth.isCustomer()) {
+          console.log('고객 사용자, 대시보드로 이동');
+          window.location.href = '/samples/pages/customer/index.html';
+        } else if (Auth.isDriver()) {
+          console.log('기사 사용자, 대시보드로 이동');
+          window.location.href = '/samples/pages/driver/index.html';
+        } else {
+          console.warn('역할 불명, 진입점으로 복귀');
+          window.location.href = '/samples/index.html';
+        }
+      } else {
+        // 미로그인 → 로그인 페이지 링크 표시
+        console.log('미인증 사용자');
+        statusDiv.innerHTML = `
+          <p>로그인이 필요합니다.</p>
+          <a href="/samples/pages/auth/login.html" class="btn-primary">로그인</a>
+        `;
+      }
+    }
+
+    // 페이지 로드 시 진입점 초기화
+    window.addEventListener('load', initApp);
+  </script>
+</body>
+</html>

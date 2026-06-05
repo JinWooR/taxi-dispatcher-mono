@@ -190,6 +190,23 @@ services:
           cpus: '0.25'
           memory: 128M
 
+  # 정적 UI (API 흐름 검증용)
+  ui:
+    image: nginx:alpine
+    container_name: ui
+    ports:
+      - "3000:80"
+    volumes:
+      - ./ui:/usr/share/nginx/html:ro
+    networks:
+      - taxi-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 64M
+
 volumes:
   mysql_data:
     driver: local
