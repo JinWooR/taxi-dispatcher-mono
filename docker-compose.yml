@@ -26,6 +26,7 @@ services:
       - ./infra/mysql/init-driver-schema.sql:/docker-entrypoint-initdb.d/05-driver-schema.sql
       - ./infra/mysql/init-driver-data.sql:/docker-entrypoint-initdb.d/06-driver-data.sql
       - ./infra/mysql/init-dispatcher-schema.sql:/docker-entrypoint-initdb.d/07-dispatcher-schema.sql
+      - ./infra/mysql/init-movement-history-schema.sql:/docker-entrypoint-initdb.d/08-movement-history-schema.sql
     networks:
       - taxi-network
     healthcheck:
@@ -167,6 +168,37 @@ services:
           cpus: '0.5'
           memory: 512M
 
+  # Movement History Service
+  movement-history-service:
+    build:
+      context: .
+      dockerfile: services/movement-history-service/Dockerfile
+    container_name: movement-history-service
+    ports:
+      - "8085:8080"
+    env_file:
+      - envs/common.env
+      - envs/movement-history.env
+    environment:
+      JAVA_OPTS: "-Xms256m -Xmx384m"
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/movement_history_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: 'false'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - taxi-network
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
   # Swagger UI Aggregator (모든 서비스 API 문서 통합 + 동적 타이틀)
   swagger-ui:
     build:
@@ -181,7 +213,8 @@ services:
           {"url": "http://localhost:8081/v3/api-docs", "name": "Account Service"},
           {"url": "http://localhost:8082/v3/api-docs", "name": "Customer Service"},
           {"url": "http://localhost:8083/v3/api-docs", "name": "Driver Service"},
-          {"url": "http://localhost:8084/v3/api-docs", "name": "Dispatcher Service"}
+          {"url": "http://localhost:8084/v3/api-docs", "name": "Dispatcher Service"},
+          {"url": "http://localhost:8085/v3/api-docs", "name": "Movement History Service"}
         ]
     # =====================================================================
     # [참고용 / 미사용] 방식 A: command: 인라인 sed 주입

@@ -1,4 +1,9 @@
-# movement-history-service 설계 문서
+# movement-history-service 설계 문서 (초기)
+
+> ⚠️ 본 문서는 **초기 설계 단계의 결정 이력 보존용** 입니다. 일부 결정 사항은 후속 작업에서 변경됐습니다.
+> 최신 구현 명세는 [`TASK-movement-history-service-2.md`](TASK-movement-history-service-2.md) 를 참조하세요.
+
+---
 
 ## 1. 배경 / 목적
 
