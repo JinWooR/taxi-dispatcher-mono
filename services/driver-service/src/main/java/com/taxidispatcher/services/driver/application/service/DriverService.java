@@ -24,6 +24,7 @@ import java.util.List;
 public class DriverService {
 
     private final DriverRepository driverRepository;
+    private final WorkSessionService workSessionService;
 
     public Driver registerDriver(String accountId, RegisterDriverRequest request) {
         if (driverRepository.existsByAccountId(accountId)) {
@@ -103,8 +104,18 @@ public class DriverService {
 
     public void changeStatus(String accountId, DriverStatus newStatus) {
         Driver driver = getDriverByAccountId(accountId);
+        DriverStatus previousStatus = driver.getStatus();
+
         driver.changeStatus(newStatus);
         driverRepository.save(driver);
+
+        String driverIdValue = driver.getDriverId().getValue();
+        if (previousStatus == DriverStatus.OFFLINE && newStatus == DriverStatus.ONLINE) {
+            workSessionService.startNewSession(driverIdValue);
+        } else if (previousStatus != DriverStatus.OFFLINE && newStatus == DriverStatus.OFFLINE) {
+            workSessionService.endCurrentSession(driverIdValue);
+        }
+
         log.info("기사 상태 변경: accountId={}, status={}", accountId, newStatus);
     }
 
