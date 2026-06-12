@@ -12,6 +12,10 @@ public interface MovementSegmentRepository {
 
     List<MovementSegment> findByWorkSessionId(WorkSessionId workSessionId);
 
+    int countByWorkSessionId(WorkSessionId workSessionId);
+
+    Optional<MovementSegment> findActiveByWorkSessionId(WorkSessionId workSessionId);
+
     List<MovementSegment> findByDispatchId(DispatchId dispatchId);
 
     List<MovementSegment> findByDriverIdAndStartedAtBetween(DriverId driverId,

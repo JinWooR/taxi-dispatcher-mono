@@ -1,7 +1,8 @@
 # movement-history-service 구현 명세
 
 > ✅ 본 문서는 **실제 코드 기준 최신 명세** 입니다.
-> 초기 설계 / 결정 이력은 [`TASK-movement-history-service-1.md`](TASK-movement-history-service-1.md) 를 참조하세요.
+> 초기 설계 / 결정 이력은 [`TASK-movement-history-service-1.md`](TASK-movement-history-service-1.md) 를 참조하세요.  
+> 향후 전환 계획 (좌표 누적 모델) 은 [`TASK-movement-history-service-3.md`](TASK-movement-history-service-3.md) 를 참조하세요.
 
 ---
 
@@ -77,7 +78,7 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 | POST | `/work-sessions/{workSessionId}/segments` | 새 segment 시작 (segmentNo 서버 자동) |
 | POST | `/work-sessions/{workSessionId}/segments/rotate` | 활성 segment complete + 새 segment 시작 (1회 호출) |
 | PUT | `/work-sessions/{workSessionId}/segments/{segmentId}` | 진행 중 segment polyline 갱신 |
-| POST | `/work-sessions/{workSessionId}/segments/{segmentId}/complete` | segment 완료 (근무 종료 시) |
+| POST | `/work-sessions/{workSessionId}/segments/complete` | 활성 segment 완료 (자동 식별, 근무 종료 시) |
 | GET | `/work-sessions/{workSessionId}` | 근무 단위 segment 전체 조회 |
 
 ### 3.2 DISPATCH_TRIP 조회 (driver + customer)
@@ -117,7 +118,7 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 
 ## 4. 서비스 간 연계
 
-- **driver-service**: `work_session` 도메인 보유. 본 서비스는 `work_session_id` 참조만.
+- **driver-service**: `work_session` 도메인 보유. **새 segment 생성 시** (start, rotate-without-active) `InternalWorkSessionApi.findById` (`GET /internal/work-sessions/{workSessionId}`) 호출로 검증 — 존재 여부 / driverId 일치 / status IN_PROGRESS. rotate 의 활성 segment 있음 분기는 검증 skip (이미 검증된 세션의 연장).
 - **dispatcher-service**: `Dispatch` 도메인 보유. 본 서비스는 `dispatch_id` 참조만.
 - **운행 시작/종료 시 segment finalize**: §6 결정에 따라 **클라이언트 주도**. 서버간 internal 호출 없음.
 
@@ -139,6 +140,8 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 
 ## 6. 보류 / 후속 작업
 
+- **좌표 누적 모델 전환** (polyline 덮어쓰기 → 좌표 list append + 서버 인코딩) — 상세 계획 [`TASK-movement-history-service-3.md`](TASK-movement-history-service-3.md). 현재는 의식적으로 1차 모델 유지
+- **DTO record 마이그레이션 (점진적)** — 신규 DTO 부터 record 도입 (`RotateSegmentRequest` 가 시작점). 추후 기존 DTO (Request/Response) 도 record 마이그레이션 예정. 전사적 컨벤션 확정 시 다른 서비스도 함께 전환
 - **§6 lifecycle finalize internal API 보완** — (a) 클라이언트 주도만으로 강제 종료 시 누락 위험. 후속에 driver/dispatcher → movement-history internal API 추가 검토
 - **DISPATCH_TRIP customer 권한 검증 강화** — 현재 customer 토큰 단순 조회. 향후 segment 에 customer_id 컬럼 추가 또는 dispatcher-service internal 호출 도입
 - **동시 start race condition** — UNIQUE `(work_session_id, segment_no)` 안전망. 명시적 처리 없음 (실용 빈도 낮음)
@@ -170,3 +173,8 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 |---|---|
 | 2026-06-08 | 초기 설계 문서 (-1) 작성 |
 | 2026-06-12 | 구현 명세 문서 (-2) 신설 + 초기 설계와 양방향 링크. segmentNo 자동 할당, rotate API, DISPATCH_TRIP 단순화, 후속 결정 일괄 반영 |
+| 2026-06-16 | complete API 에서 `segmentId` 제거 (활성 자동 식별). `MOVEMENT_NO_ACTIVE_SEGMENT` (404) 에러 추가. rotate/start 와 패턴 일관화 |
+| 2026-06-16 | rotate API body 를 `{ current, next }` 구조로 분리 (current.polyline 으로 마지막 좌표 보강 가능) |
+| 2026-06-16 | 좌표 누적 모델 전환 계획 (-3) 작성. 현 모델은 유지, 추후 전환 예정 |
+| 2026-06-16 | `RotateSegmentRequest` 를 record 로 전환 + 기존 DTO (`UpdateSegmentPolylineRequest`, `StartWorkSessionSegmentRequest`) 재사용. DTO record 마이그레이션 점진적 시작점 |
+| 2026-06-16 | 새 segment 생성 시 driver-service `InternalWorkSessionApi.findById` 로 work_session 검증 추가 (`MOVEMENT_WORK_SESSION_NOT_FOUND` 404 / `FORBIDDEN` 403 / `MOVEMENT_WORK_SESSION_NOT_IN_PROGRESS` 409). rotate 의 활성 있음 분기는 검증 skip |

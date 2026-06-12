@@ -11,6 +11,11 @@ public interface MovementSegmentJpaRepository extends JpaRepository<MovementSegm
 
     List<MovementSegmentJpaEntity> findByWorkSessionIdOrderBySegmentNoAsc(String workSessionId);
 
+    long countByWorkSessionId(String workSessionId);
+
+    Optional<MovementSegmentJpaEntity> findFirstByWorkSessionIdAndStatusOrderBySegmentNoDesc(
+            String workSessionId, MovementSegmentStatus status);
+
     List<MovementSegmentJpaEntity> findByDispatchIdOrderBySegmentNoAsc(String dispatchId);
 
     List<MovementSegmentJpaEntity> findByDriverIdAndStartedAtBetweenOrderByStartedAtAsc(

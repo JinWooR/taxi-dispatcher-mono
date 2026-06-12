@@ -45,6 +45,10 @@ jwt:
 internal:
   api-key: ${MOVEMENT_HISTORY_INTERNAL_API_KEY}
 
+driver-service:
+  url: ${DRIVER_SERVICE_URL}
+  api-key: ${DRIVER_INTERNAL_API_KEY}
+
 logging:
   level:
     root: INFO

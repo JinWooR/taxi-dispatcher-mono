@@ -1,5 +1,6 @@
 package com.taxidispatcher.services.movementhistory.application.service;
 
+import com.taxidispatcher.services.movementhistory.application.dto.request.RotateSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.StartWorkSessionSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.UpdateSegmentPolylineRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.response.DispatchMovementsResponse;
@@ -12,6 +13,8 @@ import com.taxidispatcher.services.movementhistory.domain.segment.EncodedPolylin
 import com.taxidispatcher.services.movementhistory.domain.segment.MovementSegment;
 import com.taxidispatcher.services.movementhistory.domain.segment.MovementSegmentRepository;
 import com.taxidispatcher.services.movementhistory.domain.segment.WorkSessionId;
+import com.taxidispatcher.services.movementhistory.infrastructure.client.DriverServiceClient;
+import com.taxidispatcher.shared.common.dto.driver.internal.DriverInternalWorkSession;
 import com.taxidispatcher.shared.common.exception.DomainException;
 import com.taxidispatcher.shared.common.jwt.AuthUser;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +30,77 @@ import java.util.List;
 @Transactional
 public class MovementSegmentService {
 
+    private static final String WORK_SESSION_STATUS_IN_PROGRESS = "IN_PROGRESS";
+
     private final MovementSegmentRepository repository;
+    private final DriverServiceClient driverServiceClient;
 
     public MovementSegmentResponse start(String workSessionId, String driverId,
                                           StartWorkSessionSegmentRequest request) {
+        return startInternal(workSessionId, driverId, request.getPolyline(), request.getDispatchId());
+    }
+
+    public MovementSegmentResponse rotate(String workSessionId, String driverId,
+                                           RotateSegmentRequest request) {
+        WorkSessionId workSession = new WorkSessionId(workSessionId);
+        LocalDateTime now = LocalDateTime.now();
+
+        repository.findActiveByWorkSessionId(workSession)
+            .ifPresent(active -> {
+                if (!active.getDriverId().getValue().equals(driverId)) {
+                    throw forbidden("해당 근무 세션의 활성 segment 에 접근할 권한이 없습니다.");
+                }
+                if (request.current() != null && request.current().getPolyline() != null) {
+                    active.updatePolyline(new EncodedPolyline(request.current().getPolyline()), now);
+                }
+                active.complete(now);
+                repository.save(active);
+            });
+
+        StartWorkSessionSegmentRequest next = request.next();
+        return startInternal(workSessionId, driverId, next.getPolyline(), next.getDispatchId());
+    }
+
+    private MovementSegmentResponse startInternal(String workSessionId, String driverId,
+                                                   String polyline, String dispatchId) {
+        verifyWorkSession(workSessionId, driverId);
+
+        WorkSessionId workSession = new WorkSessionId(workSessionId);
+        int nextSegmentNo = repository.countByWorkSessionId(workSession) + 1;
         MovementSegment segment = MovementSegment.start(
-            new WorkSessionId(workSessionId),
+            workSession,
             new DriverId(driverId),
-            request.getDispatchId() != null ? new DispatchId(request.getDispatchId()) : null,
-            request.getSegmentNo(),
-            new EncodedPolyline(request.getPolyline()),
+            dispatchId != null ? new DispatchId(dispatchId) : null,
+            nextSegmentNo,
+            new EncodedPolyline(polyline),
             LocalDateTime.now()
         );
         return MovementSegmentResponse.from(repository.save(segment));
+    }
+
+    /**
+     * 새 segment 생성 직전 driver-service 의 work_session 유효성 검증.
+     * - 존재 여부 (404)
+     * - 토큰 driverId 와 work_session.driverId 일치 (403)
+     * - status == IN_PROGRESS (ENDED 면 409)
+     */
+    private void verifyWorkSession(String workSessionId, String driverId) {
+        DriverInternalWorkSession ws = driverServiceClient.findWorkSession(workSessionId)
+            .orElseThrow(() -> new DomainException(
+                "MOVEMENT_WORK_SESSION_NOT_FOUND",
+                String.format("근무 세션을 찾을 수 없습니다: %s", workSessionId),
+                HttpStatus.NOT_FOUND
+            ));
+        if (!ws.driverId().equals(driverId)) {
+            throw forbidden("해당 근무 세션에 접근할 권한이 없습니다.");
+        }
+        if (!WORK_SESSION_STATUS_IN_PROGRESS.equals(ws.status())) {
+            throw new DomainException(
+                "MOVEMENT_WORK_SESSION_NOT_IN_PROGRESS",
+                "종료된 근무 세션에는 segment 를 생성할 수 없습니다.",
+                HttpStatus.CONFLICT
+            );
+        }
     }
 
     public MovementSegmentResponse updatePolyline(Long segmentId, String driverId,
@@ -49,8 +110,16 @@ public class MovementSegmentService {
         return MovementSegmentResponse.from(repository.save(segment));
     }
 
-    public MovementSegmentResponse complete(Long segmentId, String driverId) {
-        MovementSegment segment = findOwned(segmentId, driverId);
+    public MovementSegmentResponse complete(String workSessionId, String driverId) {
+        MovementSegment segment = repository.findActiveByWorkSessionId(new WorkSessionId(workSessionId))
+            .orElseThrow(() -> new DomainException(
+                "MOVEMENT_NO_ACTIVE_SEGMENT",
+                "근무 세션에 진행 중 segment 가 없습니다.",
+                HttpStatus.NOT_FOUND
+            ));
+        if (!segment.getDriverId().getValue().equals(driverId)) {
+            throw forbidden("해당 근무 세션의 활성 segment 에 접근할 권한이 없습니다.");
+        }
         segment.complete(LocalDateTime.now());
         return MovementSegmentResponse.from(repository.save(segment));
     }

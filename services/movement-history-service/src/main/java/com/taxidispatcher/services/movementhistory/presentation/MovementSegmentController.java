@@ -1,5 +1,6 @@
 package com.taxidispatcher.services.movementhistory.presentation;
 
+import com.taxidispatcher.services.movementhistory.application.dto.request.RotateSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.StartWorkSessionSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.UpdateSegmentPolylineRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.response.DispatchMovementsResponse;
@@ -44,6 +45,20 @@ public class MovementSegmentController implements MovementSegmentApi {
     }
 
     @Override
+    @PostMapping("/work-sessions/{workSessionId}/segments/rotate")
+    @PreAuthorize("hasRole('DRIVER')")
+    public ResponseEntity<CommonResponse<MovementSegmentResponse>> rotateSegment(
+            @AuthenticationPrincipal AuthUser authUser,
+            @PathVariable String workSessionId,
+            @Valid @RequestBody RotateSegmentRequest request) {
+        MovementSegmentResponse response = service.rotate(workSessionId, authUser.getActor(), request);
+        return ResponseEntity.ok(CommonResponse.success(response));
+    }
+
+    // TODO [좌표 누적 모델 전환 예정]
+    //   현재 polyline 덮어쓰기는 단 1회 잘못된 호출로 데이터 손실 위험.
+    //   좌표 list append 방식 전환 예정. 상세: TASK-movement-history-service-3.md
+    @Override
     @PutMapping("/work-sessions/{workSessionId}/segments/{segmentId}")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<MovementSegmentResponse>> updateSegmentPolyline(
@@ -56,13 +71,12 @@ public class MovementSegmentController implements MovementSegmentApi {
     }
 
     @Override
-    @PostMapping("/work-sessions/{workSessionId}/segments/{segmentId}/complete")
+    @PostMapping("/work-sessions/{workSessionId}/segments/complete")
     @PreAuthorize("hasRole('DRIVER')")
     public ResponseEntity<CommonResponse<MovementSegmentResponse>> completeSegment(
             @AuthenticationPrincipal AuthUser authUser,
-            @PathVariable String workSessionId,
-            @PathVariable Long segmentId) {
-        MovementSegmentResponse response = service.complete(segmentId, authUser.getActor());
+            @PathVariable String workSessionId) {
+        MovementSegmentResponse response = service.complete(workSessionId, authUser.getActor());
         return ResponseEntity.ok(CommonResponse.success(response));
     }
 

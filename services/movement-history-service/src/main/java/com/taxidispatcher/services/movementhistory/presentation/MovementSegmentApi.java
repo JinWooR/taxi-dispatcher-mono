@@ -1,5 +1,6 @@
 package com.taxidispatcher.services.movementhistory.presentation;
 
+import com.taxidispatcher.services.movementhistory.application.dto.request.RotateSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.StartWorkSessionSegmentRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.request.UpdateSegmentPolylineRequest;
 import com.taxidispatcher.services.movementhistory.application.dto.response.DispatchMovementsResponse;
@@ -37,6 +38,20 @@ public interface MovementSegmentApi {
             @Parameter(description = "Work Session ID") String workSessionId,
             @Valid StartWorkSessionSegmentRequest request);
 
+    @Operation(summary = "Segment 전환 (rotate)",
+            description = "활성 segment 가 있으면 current.polyline 으로 마지막 갱신 후 complete, next 정보로 새 segment 시작. " +
+                    "활성 segment 가 없으면 current 무시하고 next 만으로 새 시작 (관대 모드). " +
+                    "current.polyline 은 마지막 PUT 이후 누락된 좌표 보강용으로 선택 전달.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "전환 성공 (새 segment 반환)"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "403", description = "기사 권한 필요 또는 활성 segment 소유자 불일치")
+    })
+    ResponseEntity<CommonResponse<MovementSegmentResponse>> rotateSegment(
+            AuthUser authUser,
+            @Parameter(description = "Work Session ID") String workSessionId,
+            @Valid RotateSegmentRequest request);
+
     @Operation(summary = "진행 중 segment polyline 갱신",
             description = "IN_PROGRESS 상태 segment 의 polyline 을 덮어씁니다.")
     @ApiResponses(value = {
@@ -52,18 +67,17 @@ public interface MovementSegmentApi {
             @Parameter(description = "Segment ID") Long segmentId,
             @Valid UpdateSegmentPolylineRequest request);
 
-    @Operation(summary = "Segment 완료 (COMPLETED 전이)",
-            description = "진행 중 segment 를 완료 상태로 전환합니다.")
+    @Operation(summary = "활성 segment 완료 (COMPLETED 전이)",
+            description = "근무 세션의 활성(IN_PROGRESS) segment 를 자동 식별하여 완료 상태로 전환합니다. " +
+                    "근무 종료 또는 segment 만 종료 시 사용.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "완료 성공"),
-            @ApiResponse(responseCode = "403", description = "본인 segment 아님"),
-            @ApiResponse(responseCode = "404", description = "Segment 없음"),
-            @ApiResponse(responseCode = "409", description = "이미 완료된 segment")
+            @ApiResponse(responseCode = "403", description = "본인 활성 segment 아님"),
+            @ApiResponse(responseCode = "404", description = "활성 segment 없음")
     })
     ResponseEntity<CommonResponse<MovementSegmentResponse>> completeSegment(
             AuthUser authUser,
-            @Parameter(description = "Work Session ID") String workSessionId,
-            @Parameter(description = "Segment ID") Long segmentId);
+            @Parameter(description = "Work Session ID") String workSessionId);
 
     @Operation(summary = "근무 세션 이동 이력 조회",
             description = "Work Session 단위의 모든 segment 를 segmentNo 오름차순으로 반환합니다.")

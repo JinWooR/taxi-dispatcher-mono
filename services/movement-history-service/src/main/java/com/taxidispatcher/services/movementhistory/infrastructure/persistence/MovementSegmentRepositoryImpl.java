@@ -40,6 +40,18 @@ public class MovementSegmentRepositoryImpl implements MovementSegmentRepository 
     }
 
     @Override
+    public int countByWorkSessionId(WorkSessionId workSessionId) {
+        return (int) jpaRepository.countByWorkSessionId(workSessionId.getValue());
+    }
+
+    @Override
+    public Optional<MovementSegment> findActiveByWorkSessionId(WorkSessionId workSessionId) {
+        return jpaRepository.findFirstByWorkSessionIdAndStatusOrderBySegmentNoDesc(
+                workSessionId.getValue(), MovementSegmentStatus.IN_PROGRESS)
+            .map(MovementSegmentJpaEntity::toModel);
+    }
+
+    @Override
     public List<MovementSegment> findByDispatchId(DispatchId dispatchId) {
         return jpaRepository.findByDispatchIdOrderBySegmentNoAsc(dispatchId.getValue())
             .stream()
