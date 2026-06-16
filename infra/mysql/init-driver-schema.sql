@@ -28,3 +28,19 @@ CREATE TABLE IF NOT EXISTS drivers (
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
 COMMENT='택시 기사 정보';
+
+CREATE TABLE IF NOT EXISTS work_sessions (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    work_session_id VARCHAR(36) UNIQUE NOT NULL COMMENT '근무 세션 ID (UUID)',
+    driver_id VARCHAR(36) NOT NULL COMMENT '기사 ID',
+    status VARCHAR(20) NOT NULL COMMENT '상태 (IN_PROGRESS, ENDED)',
+    started_at TIMESTAMP NOT NULL COMMENT '근무 시작 일시',
+    ended_at TIMESTAMP NULL COMMENT '근무 종료 일시',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시',
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '수정일시',
+
+    UNIQUE KEY uk_work_session_id (work_session_id),
+    INDEX idx_driver_status (driver_id, status),
+    INDEX idx_driver_started (driver_id, started_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+COMMENT='기사 근무 세션 (ONLINE ~ OFFLINE 단위)';
