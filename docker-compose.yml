@@ -167,9 +167,11 @@ services:
           cpus: '0.5'
           memory: 512M
 
-  # Swagger UI Aggregator (모든 서비스 API 문서 통합)
+  # Swagger UI Aggregator (모든 서비스 API 문서 통합 + 동적 타이틀)
   swagger-ui:
-    image: swaggerapi/swagger-ui
+    build:
+      context: ./infra/swagger-ui
+      dockerfile: Dockerfile
     container_name: swagger-ui
     ports:
       - "8090:8080"
@@ -181,6 +183,21 @@ services:
           {"url": "http://localhost:8083/v3/api-docs", "name": "Driver Service"},
           {"url": "http://localhost:8084/v3/api-docs", "name": "Dispatcher Service"}
         ]
+    # =====================================================================
+    # [참고용 / 미사용] 방식 A: command: 인라인 sed 주입
+    # ---------------------------------------------------------------------
+    # 별도 빌드 단계 없이 공식 이미지에 sed로 index.html을 패치하는 방식.
+    # YAML 안에서 따옴표/이스케이프 처리가 복잡하고 한 줄 sed 명령에 JS 전체를
+    # 압축해야 하므로 가독성·유지보수성이 낮아 본 프로젝트에서는 위 build:
+    # 방식(D, infra/swagger-ui/ 커스텀 이미지)을 채택했다.
+    #
+    # image: swaggerapi/swagger-ui
+    # command:
+    #   - sh
+    #   - -c
+    #   - |
+    #     sed -i 's|</body>|<script>(function(){function u(){var s=document.querySelector("select");if(s\&\&s.selectedOptions[0])document.title=s.selectedOptions[0].text;}var o=new MutationObserver(function(){var s=document.querySelector("select");if(s\&\&!s.dataset.t){s.dataset.t="1";s.addEventListener("change",u);u();}});o.observe(document.body,{childList:true,subtree:true});})();</script></body>|' /usr/share/nginx/html/index.html && /docker-entrypoint.sh nginx -g 'daemon off;'
+    # =====================================================================
     networks:
       - taxi-network
     restart: unless-stopped
