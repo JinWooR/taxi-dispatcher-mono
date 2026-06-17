@@ -1,6 +1,6 @@
 # movement-history-service 좌표 누적 모델 전환 계획
 
-> 본 문서는 **향후 전환 계획** 입니다. 현재 구현 상태는 [`TASK-movement-history-service-2.md`](TASK-movement-history-service-2.md) 참조.
+> 본 문서는 **향후 전환 계획** 입니다. 현재 구현 상태는 [`TASK-movement-history-service-2.md`](docs/task/TASK-movement-history-service-2.md) 참조.
 
 ---
 

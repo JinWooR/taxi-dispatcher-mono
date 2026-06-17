@@ -2,7 +2,7 @@
 
 > ✅ 본 문서는 **실제 코드 기준 최신 명세** 입니다.
 > 초기 설계 / 결정 이력은 [`TASK-movement-history-service-1.md`](TASK-movement-history-service-1.md) 를 참조하세요.  
-> 향후 전환 계획 (좌표 누적 모델) 은 [`TASK-movement-history-service-3.md`](TASK-movement-history-service-3.md) 를 참조하세요.
+> 향후 전환 계획 (좌표 누적 모델) 은 [`TASK-movement-history-service-3.md`](../../TASK-movement-history-service-3.md) 를 참조하세요.
 
 ---
 
@@ -140,7 +140,7 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 
 ## 6. 보류 / 후속 작업
 
-- **좌표 누적 모델 전환** (polyline 덮어쓰기 → 좌표 list append + 서버 인코딩) — 상세 계획 [`TASK-movement-history-service-3.md`](TASK-movement-history-service-3.md). 현재는 의식적으로 1차 모델 유지
+- **좌표 누적 모델 전환** (polyline 덮어쓰기 → 좌표 list append + 서버 인코딩) — 상세 계획 [`TASK-movement-history-service-3.md`](../../TASK-movement-history-service-3.md). 현재는 의식적으로 1차 모델 유지
 - **DTO record 마이그레이션 (점진적)** — 신규 DTO 부터 record 도입 (`RotateSegmentRequest` 가 시작점). 추후 기존 DTO (Request/Response) 도 record 마이그레이션 예정. 전사적 컨벤션 확정 시 다른 서비스도 함께 전환
 - **§6 lifecycle finalize internal API 보완** — (a) 클라이언트 주도만으로 강제 종료 시 누락 위험. 후속에 driver/dispatcher → movement-history internal API 추가 검토
 - **DISPATCH_TRIP customer 권한 검증 강화** — 현재 customer 토큰 단순 조회. 향후 segment 에 customer_id 컬럼 추가 또는 dispatcher-service internal 호출 도입
@@ -160,10 +160,10 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 - [x] **Phase 3.1**: HV000151 픽스 (Api 인터페이스에 `@Valid` 명시)
 - [x] **Phase 4**: 후속 API (DISPATCH_TRIP 조회 / 기간별 me 조회 / 활성 segment 조회)
 - [x] **Phase 5**: segmentNo 자동 할당 + rotate API
-- [ ] **Phase 6**: 통합 검증 (docker-compose → Swagger → 8개 API 호출)
+- [x] **Phase 6**: 통합 검증 (docker-compose → Swagger → 9개 API 호출)
 - [ ] **Phase 7 (후속)**: lifecycle finalize internal API 보완 (필요 시)
 - [ ] **Phase 7 (후속)**: DISPATCH_TRIP customer 권한 검증 강화 (필요 시)
-- [ ] **Phase 7 (후속)**: driver-service `work_session` 도메인 추가 (선행 서비스 측 작업)
+- [x] **Phase 7 (후속)**: driver-service `work_session` 도메인 추가 (이미 존재 확인됨)
 
 ---
 
@@ -178,3 +178,4 @@ complete(...)         → IN_PROGRESS → COMPLETED, ended_at 확정
 | 2026-06-16 | 좌표 누적 모델 전환 계획 (-3) 작성. 현 모델은 유지, 추후 전환 예정 |
 | 2026-06-16 | `RotateSegmentRequest` 를 record 로 전환 + 기존 DTO (`UpdateSegmentPolylineRequest`, `StartWorkSessionSegmentRequest`) 재사용. DTO record 마이그레이션 점진적 시작점 |
 | 2026-06-16 | 새 segment 생성 시 driver-service `InternalWorkSessionApi.findById` 로 work_session 검증 추가 (`MOVEMENT_WORK_SESSION_NOT_FOUND` 404 / `FORBIDDEN` 403 / `MOVEMENT_WORK_SESSION_NOT_IN_PROGRESS` 409). rotate 의 활성 있음 분기는 검증 skip |
+| 2026-06-16 | 통합 검증 완료 (사용자 직접). Phase 6 완료 표시. Phase 7 의 driver-service work_session 도메인 이미 존재 확인 |
