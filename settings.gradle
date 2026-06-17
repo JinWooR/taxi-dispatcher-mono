@@ -11,4 +11,6 @@ include 'services:driver-service'
 findProject(':services:driver-service')?.name = 'driver-service'
 include 'services:dispatcher-service'
 findProject(':services:dispatcher-service')?.name = 'dispatcher-service'
+include 'services:movement-history-service'
+findProject(':services:movement-history-service')?.name = 'movement-history-service'
 
