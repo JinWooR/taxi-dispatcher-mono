@@ -1,3 +1,7 @@
 /gradlew text eol=lf
+# Linux 컨테이너에서 shebang(#!/bin/sh\r) 해석 실패 방지.
+# Windows의 core.autocrlf=true 환경에서 CRLF로 저장되면
+# 스크립트 실행이 "not found" 오류로 실패한다.
+*.sh text eol=lf
 *.bat text eol=crlf
 *.jar binary
